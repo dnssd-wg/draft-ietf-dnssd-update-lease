@@ -47,7 +47,7 @@
     <keyword>I-D</keyword>
     <keyword>Internet-Draft</keyword>
     <abstract>
-      <t>This document proposes a new EDNS0 option that can be used by DNS Update clients and
+      <t>This document proposes a new EDNS0 option that can be used by DNS Update requestors and
       DNS servers to include a lease lifetime in a DNS Update or response, allowing a server to garbage collect stale
       resource records that have been added by DNS Updates</t>
     </abstract>
@@ -94,13 +94,8 @@
 
     <section>
       <name>Mechanisms</name>
-      <t>The EDNS0 Update Lease option is included in a standard DNS
-      Update message <xref target="RFC2136"/> within an EDNS(0) OPT
-      pseudo-RR <xref target="RFC6891"/> with a new OPT and RDATA format proposed here.
-      Encoding the Update Lease Lifetime in an OPT RR requires minimal
-      modification to a name server's front-end, and will cause servers
-      that do not implement this extension to automatically return a
-      descriptive error (NOTIMPL).</t>
+      <t>The EDNS0 Update Lease option is included in a standard DNS Update message <xref target="RFC2136"/>
+      within an EDNS(0) OPT pseudo-RR <xref target="RFC6891"/>.</t>
     </section>
 
     <section anchor="update">
