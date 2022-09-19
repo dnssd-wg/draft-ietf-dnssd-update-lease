@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
+<rfc category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-01" ipr="trust200902"
+     xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
+     scripts="Common,Latin" sortRefs="false"
+     symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
+  <front>
+    <title abbrev='Dynamic DNS Update Leases'>
+      An EDNS0 option to negotiate Leases on DNS Updates
+    </title>
+
+    <author initials='S' surname='Cheshire' fullname='Stuart Cheshire'>
+      <organization>Apple Inc.</organization>
+      <address>
+        <postal>
+          <street>One Apple Park Way</street>
+          <city>Cupertino</city>
+          <region>California</region>
+          <code>95014</code>
+          <country>USA</country>
+        </postal>
+        <phone>+1 408 974 3207</phone>
+        <email>cheshire@apple.com</email>
+      </address>
+    </author>
+
+    <author initials="T" surname="Lemon" fullname="Ted Lemon">
+      <organization>Apple Inc</organization>
+      <address>
+        <postal>
+          <street>P.O. Box 958</street>
+          <city>Brattleboro</city>
+          <region>Vermont</region>
+          <country>United States of America</country>
+          <code>05302</code>
+        </postal>
+        <email>mellon@fugue.com</email>
+      </address>
+    </author>
+
+    <date year='2022' month='April' day='24'/>
+    <area>Internet</area>
+    <workgroup>Internet Engineering Task Force</workgroup>
+    <keyword>DNS Update</keyword>
+    <keyword>RFC</keyword>
+    <keyword>Request for Comments</keyword>
+    <keyword>I-D</keyword>
+    <keyword>Internet-Draft</keyword>
+    <abstract>
+      <t>This document proposes a new EDNS0 option that can be used by DNS Update clients and
+      DNS servers to include a lease lifetime in a DNS Update or response, allowing a server to garbage collect stale
+      resource records that have been added by DNS Updates</t>
+    </abstract>
+  </front>
+
+  <middle>
+
+    <section>
+      <name>Introduction</name>
+      <t>Dynamic DNS Update <xref target="RFC2136"/> allows for a mapping from a persistent
+      hostname to a dynamic IP address. This capability is particularly
+      beneficial to mobile hosts, whose IP address may frequently change
+      with location. However, the mobile nature of such hosts often means
+      that dynamically updated resource records are not properly
+      deleted. Consider, for instance, a mobile user who publishes address
+      records via dynamic update. If this user moves
+      their laptop out of range of the Wi-Fi access point,
+      the address record containing stale information
+      may remain on the server indefinitely.
+      An extension to Dynamic Update is
+      thus required to tell the server to automatically delete resource
+      records if they are not refreshed after a period of time.</t>
+
+      <t>Note that overloading the resource record TTL <xref target="RFC1035"/> is not
+      appropriate for purposes of garbage collection. Data that is
+      susceptible to frequent change or invalidation, thus requiring a
+      garbage collection mechanism, needs a relatively short resource
+      record TTL to avoid polluting intermediate DNS caches with stale
+      data. Using this TTL, short enough to minimize stale cached data,
+      as a garbage collection lease lifetime would result in an unacceptable
+      amount of network traffic due to refreshes
+      (see <xref target="refresh"/> "Refresh Messages").</t>
+    </section>
+
+    <section>
+      <name>Conventions and Terminology Used in this Document</name>
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY",
+      and "OPTIONAL" in this document are to be interpreted as described
+      in "Key words for use in RFCs to Indicate Requirement Levels",
+      when, and only when, they appear in all capitals, as shown here
+      <xref target="RFC2119"/> <xref target="RFC8174"/>.</t>
+    </section>
+
+    <section>
+      <name>Mechanisms</name>
+      <t>The EDNS0 Update Lease option is included in a standard DNS
+      Update message <xref target="RFC2136"/> within an EDNS(0) OPT
+      pseudo-RR <xref target="RFC6891"/> with a new OPT and RDATA format proposed here.
+      Encoding the Update Lease Lifetime in an OPT RR requires minimal
+      modification to a name server's front-end, and will cause servers
+      that do not implement this extension to automatically return a
+      descriptive error (NOTIMPL).</t>
+    </section>
+
+    <section anchor="update">
+      <name>Update Message Format</name>
+      <t>
+      Dynamic DNS Update Leases Requests and Responses are formatted as standard DNS Dynamic Update messages
+      <xref target="RFC2136"/>, with the addition of a single OPT RR
+      in the Additional section.
+      Note that if a TSIG resource record is
+      to be added to authenticate the update <xref target="RFC2845"/>, the TSIG RR should
+      appear *after* the OPT RR, allowing the message digest in the TSIG to
+      cover the OPT RR.</t>
+
+      <t>The OPT RR is formatted as follows:</t>
+
+<figure align="center" anchor="lease_opt" suppress-title="true"><artwork align="center"><![CDATA[
+Field Name      Field Type    Description
+----------------------------------------------------------------
+NAME            domain name   empty (root domain)
+TYPE            u_int16_t     OPT
+CLASS           u_int16_t     0
+TTL             u_int32_t     0
+RDLEN           u_int16_t     describes RDATA
+RDATA           byte stream   (see below)
+
+RDATA Format:
+
+Field Name       Field Type   Description
+----------------------------------------------------------------
+OPTION-CODE      u_int16_t    UPDATE-LEASE (2)
+OPTION-LENGTH    u_int16_t    4 or 8
+LEASE            u_int32_t    desired lease (request) or
+                              granted lease (response), in seconds
+KEY-LEASE        u_int32_t    optional desired (or granted)
+                              lease for KEY records, in seconds
+]]></artwork></figure>
+
+      <t>Update Requests contain, in the LEASE field of the OPT RDATA, an
+      unsigned 32-bit integer indicating the lease lifetime, in seconds, desired
+      by the client, represented in network (big-endian) byte order.
+      In Update Responses, this field contains the actual
+      lease granted by the server. The lease granted by the
+      server may be less than, greater than, or equal to the value
+      requested by the client. To reduce network and server load, a
+      minimum lease of 30 minutes (1800 seconds) is RECOMMENDED.
+      Leases are expected to be sufficiently long as to make timer
+      discrepancies (due to transmission latency, etc.) between a client
+      and server negligible. Clients that expect the updated records to be
+      relatively static MAY request appropriately longer leases. Servers
+      MAY grant relatively longer or shorter leases to reduce network
+      traffic due to refreshes, or reduce stale data, respectively.</t>
+
+      <t>There are two variants of the EDNS(0) UPDATE-LEASE option,
+      the basic (4-byte) variant and the extended (8-byte) variant.</t>
+
+      <t>In the basic (4-byte) variant, the LEASE indicated in the
+      OPT RR applies to all resource records in the Update section.</t>
+
+      <t>In the extended (8-byte) variant, the Update Lease communicates two lease lifetimes.
+      The LEASE indicated in the
+      OPT RR applies to all resource records in the Update section *except* for KEY records.
+      The KEY-LEASE indicated in the
+      OPT RR applies to KEY records in the Update section.
+      This variant is used specifically for supporting the DNS-SD
+      Service Registration Protocol <xref target="I-D.ietf-dnssd-srp"/>.
+      </t>
+    </section>
+
+    <section anchor="refresh">
+      <name>Refresh Messages</name>
+      <t>Resource records not to be deleted by the server MUST be refreshed by
+      the client before the lease elapses. Clients SHOULD refresh resource
+      records after 75% of the original lease has elapsed. If the client
+      uses UDP and does not receive a response from the server, the client
+      SHOULD re-try after 2 seconds. The client SHOULD continue to re-try,
+      doubling the length of time between each re-try, or re-try using TCP.</t>
+
+      <section>
+	<name>Coalescing Refresh Messages</name>
+        <t>If the client has sent multiple updates to a single server, the
+        client MAY include refreshes for all valid updates to that server in
+        a single message. This effectively places all records for a client
+        on the same expiration schedule, reducing network traffic due to
+        refreshes. In doing so, the client includes in the refresh message
+        all existing updates to the server, including those not yet close to
+        expiration, so long as at least one resource record in the message
+        has elapsed at least 75% of its original lease. If the client uses
+        UDP, the client MUST NOT coalesce refresh messages if doing so would
+        cause truncation of the message; in this case, multiple messages or
+        TCP should be used.</t>
+      </section>
+
+      <section>
+	<name>Refresh Message Format</name>
+        <t>Refresh messages are formatted like Dynamic Update Leases Requests
+        and Responses (see <xref target="update"/> "Update Message Format"). The resource
+        records to be refreshed are contained in the Update section. These
+        same resource records are repeated in the Prerequisite section, as
+        an "RRSet exists (value dependent)" prerequisite <xref target="RFC2136"/>.
+        An OPT RR is the last resource record in the Additional
+        section (except for a TSIG record, which, if required, follows the
+        OPT RR). The OPT RR contains the desired new lease on Requests, and
+        the actual granted lease on Responses. The Update Lease indicated in
+        the OPT RR applies to all resource records in the Update section.</t>
+      </section>
+
+      <section>
+	<name>Server Behavior</name>
+        <t>Upon receiving a valid Refresh Request, the server MUST send an
+        acknowledgment. This acknowledgment is identical to the Update
+        Response format described in <xref target="update"/> "Update Message Format",
+        and contains the new lease of the resource records being refreshed.
+        If no records in the Refresh Request have completed 50% of their
+        leases, the server SHOULD NOT refresh the records; the response
+        should contain the smallest remaining (unrefreshed) lease of all
+        records in the refresh message. The server MUST NOT increment the
+        SOA serial number of a zone as the result of a refresh.</t>
+      </section>
+    </section>
+
+    <section>
+      <name>Garbage Collection</name>
+      <t>If the Update Lease of a resource record elapses without being
+      refreshed, the server MUST NOT return the expired record in answers
+      to queries. The server MAY delete the record from its database.</t>
+    </section>
+
+    <section title="Security Considerations">
+      <t>When DNS Update is enabled on an authoritative server,
+      the Security Considerations of that specification <xref target="RFC2136"/>
+      should be considered.</t>
+
+      <t>The addition of a record lifetime to facilitate automated garbage collection
+      does not itself add any significant new security concerns.</t>
+    </section>
+
+    <section>
+      <name>IANA Considerations</name>
+      <t>The EDNS(0) OPTION CODE 2 has already been assigned for this DNS
+      extension. No additional IANA services are required by this document.</t>
+    </section>
+
+    <section>
+      <name>Acknowledgments</name>
+      <t>Thanks to Marc Krochmal and Kiren Sekar to their work in 2006 on the precursor to this document.
+      Thanks also to Roger Pantos and Chris Sharp for their contributions.</t>
+    </section>
+  </middle>
+
+  <back>
+<!-- This needLines directive is to keep the Authors' Addresses heading from being split from the list -->
+    <!-- <displayreference target="I-D.sctl-service-registration" to="RegProt"/> -->
+    <!-- <displayreference target="I-D.ietf-dnssd-hybrid" to="I-D.ietf-dnssd-hybrid"/> appears to not work in xml2rfc 2.6.2 -->
+    <references title="Normative References">
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1035.xml"/>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2136.xml"/>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6891.xml"/>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml"/>
+    </references>
+
+    <references title="Informative References">
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2845.xml"/>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml"/>
+    </references>
+  </back>
+</rfc>
