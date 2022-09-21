@@ -102,28 +102,16 @@
     <section anchor="update">
       <name>Update Message Format</name>
       <t>
-      Dynamic DNS Update Leases Requests and Responses are formatted as standard DNS Dynamic Update messages
-      <xref target="RFC2136"/>, with the addition of a single OPT RR
-      in the Additional section.
-      Note that if a TSIG resource record is
-      to be added to authenticate the update <xref target="RFC2845"/>, the TSIG RR should
-      appear *after* the OPT RR, allowing the message digest in the TSIG to
-      cover the OPT RR.</t>
+      Dynamic DNS Update Leases Requests and Responses are formatted as standard DNS Dynamic
+      Update messages <xref target="RFC2136"/>. This update MUST include the EDNS0 OPT RR, as
+      described in <xref target="RFC6891"/>.  This OPT RR MUST include an EDNS0 Option as shown
+      below.  Note that if a TSIG resource record (<xref target="RFC2845"/>) is included to
+      authenticate the update, the TSIG RR should appear <em>after</em> the OPT RR, allowing the
+      message digest in the TSIG to cover the OPT RR.</t>
 
-      <t>The OPT RR is formatted as follows:</t>
+      <t>The Update Lease EDNS0 option is formatted as follows:</t>
 
 <figure align="center" anchor="lease_opt" suppress-title="true"><artwork align="center"><![CDATA[
-Field Name      Field Type    Description
-----------------------------------------------------------------
-NAME            domain name   empty (root domain)
-TYPE            u_int16_t     OPT
-CLASS           u_int16_t     0
-TTL             u_int32_t     0
-RDLEN           u_int16_t     describes RDATA
-RDATA           byte stream   (see below)
-
-RDATA Format:
-
 Field Name       Field Type   Description
 ----------------------------------------------------------------
 OPTION-CODE      u_int16_t    UPDATE-LEASE (2)
@@ -136,18 +124,11 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 
       <t>Update Requests contain, in the LEASE field of the OPT RDATA, an
       unsigned 32-bit integer indicating the lease lifetime, in seconds, desired
-      by the client, represented in network (big-endian) byte order.
+      by the requestor, represented in network (big-endian) byte order.
       In Update Responses, this field contains the actual
       lease granted by the server. The lease granted by the
       server may be less than, greater than, or equal to the value
-      requested by the client. To reduce network and server load, a
-      minimum lease of 30 minutes (1800 seconds) is RECOMMENDED.
-      Leases are expected to be sufficiently long as to make timer
-      discrepancies (due to transmission latency, etc.) between a client
-      and server negligible. Clients that expect the updated records to be
-      relatively static MAY request appropriately longer leases. Servers
-      MAY grant relatively longer or shorter leases to reduce network
-      traffic due to refreshes, or reduce stale data, respectively.</t>
+      requested by the requestor.</t>
 
       <t>There are two variants of the EDNS(0) UPDATE-LEASE option,
       the basic (4-byte) variant and the extended (8-byte) variant.</t>
