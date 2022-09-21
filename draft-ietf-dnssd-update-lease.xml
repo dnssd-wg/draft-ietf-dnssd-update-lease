@@ -144,57 +144,128 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       <t>The reason the KEY record can be given a special lease time is that this record is used
       in the DNS-SD Service Registration Protocol <xref target="I-D.ietf-dnssd-srp"/> to reserve
       a name (or names) when the service is not present.</t>
-    </section>
 
-    <section anchor="refresh">
-      <name>Refresh Messages</name>
-      <t>Resource records not to be deleted by the server MUST be refreshed by
-      the client before the lease elapses. Clients SHOULD refresh resource
-      records after 75% of the original lease has elapsed. If the client
-      uses UDP and does not receive a response from the server, the client
-      SHOULD re-try after 2 seconds. The client SHOULD continue to re-try,
-      doubling the length of time between each re-try, or re-try using TCP.</t>
+      <section anchor="requestor">
+	<name>Requestor Behavior</name>
+	<t>DNS Update requestors SHOULD send an Update Lease option with any DNS Update that is not
+	intended to be present indefinitely. The Update Lease option SHOULD specify a time
+	interval that is no shorter than 30 minutes (1800 seconds). Requestors that expect the
+	updated records to be relatively static MAY request appropriately longer leases.</t>
 
-      <section>
-	<name>Coalescing Refresh Messages</name>
-        <t>If the client has sent multiple updates to a single server, the
-        client MAY include refreshes for all valid updates to that server in
-        a single message. This effectively places all records for a client
-        on the same expiration schedule, reducing network traffic due to
-        refreshes. In doing so, the client includes in the refresh message
-        all existing updates to the server, including those not yet close to
-        expiration, so long as at least one resource record in the message
-        has elapsed at least 75% of its original lease. If the client uses
-        UDP, the client MUST NOT coalesce refresh messages if doing so would
-        cause truncation of the message; in this case, multiple messages or
-        TCP should be used.</t>
-      </section>
+	<t>If the DNS response received by the requestor does not include an Update Lease option,
+	this is an indication that the DNS server does not support the Update Lease option. The
+	requestor SHOULD in this case continue sending refresh messages (see below) as if the
+	server had returned an identical update lease option in its response.</t>
 
-      <section>
-	<name>Refresh Message Format</name>
-        <t>Refresh messages are formatted like Dynamic Update Leases Requests
-        and Responses (see <xref target="update"/> "Update Message Format"). The resource
-        records to be refreshed are contained in the Update section. These
-        same resource records are repeated in the Prerequisite section, as
-        an "RRSet exists (value dependent)" prerequisite <xref target="RFC2136"/>.
-        An OPT RR is the last resource record in the Additional
-        section (except for a TSIG record, which, if required, follows the
-        OPT RR). The OPT RR contains the desired new lease on Requests, and
-        the actual granted lease on Responses. The Update Lease indicated in
-        the OPT RR applies to all resource records in the Update section.</t>
+	<t>If the DNS response does include an Update Lease option, the requestor MUST use the
+	interval(s) returned in this option when determining when to send Refresh messages. This
+	is true both if the interval(s) returned by the server are shorter and if they are
+	longer.</t>
       </section>
 
       <section>
 	<name>Server Behavior</name>
-        <t>Upon receiving a valid Refresh Request, the server MUST send an
-        acknowledgment. This acknowledgment is identical to the Update
-        Response format described in <xref target="update"/> "Update Message Format",
-        and contains the new lease of the resource records being refreshed.
-        If no records in the Refresh Request have completed 50% of their
-        leases, the server SHOULD NOT refresh the records; the response
-        should contain the smallest remaining (unrefreshed) lease of all
-        records in the refresh message. The server MUST NOT increment the
-        SOA serial number of a zone as the result of a refresh.</t>
+	<t>DNS Servers implementing the Update Lease option MUST include an Update Lease option
+	in response to any successful DNS Update (RCODE=0) that includes an Update Lease option.
+	Servers MAY return different lease interval(s) than specified by the requestor, granting
+	relatively longer or shorter leases to reduce network traffic due to Refreshes, or
+	reduce stale data, respectively.</t>
+      </section>
+    </section>
+
+    <section anchor="refresh">
+      <name>Refresh Messages</name>
+
+      <t>A Refresh message is a DNS Update message that is sent to the server after an initial
+      DNS Update has been sent, in order to prevent the updates records from being garbage
+      collected.</t>
+
+      <section>
+	<name>Refresh Message Format</name>
+
+        <t>Refresh messages are formatted like Dynamic Update Leases Requests and Responses (see
+        <xref target="update"/> "Update Message Format"). The Refresh message should be
+        constructed with the assumption that the result of the previous update or Refresh is
+        still in effect. The Refresh message should, in the case that the records added in a
+        previous update were for some reason garbage collected, result in those records being
+        added again.</t>
+
+	<t>The Refresh message should not include any update prerequisites that would, if the state
+	produced by the previous update or Refresh is still in effect, fail. The update should not
+	be constructed to fail in the case that the state produced by the previous update or Refresh
+	has for some reason been garbage collected.</t>
+
+	<t>An update message that changes the server state resulting from a previous Refresh or
+	update is an update, not a Refresh.</t>
+
+	<t>The Update Lease option in a Refresh contains the desired new lease on Requests, and
+	the actual granted lease on Responses. The LEASE interval indicated in the Update Lease
+	option applies to all resource records in the Update section, except that if a KEY-LEASE
+	interval is included as well, that interval applies to any KEY records included in the
+	Update section.</t>
+      </section>
+
+      <section>
+	<name>Requestor Behavior</name>
+
+	<t>A requestor that intends that its records from a previous update, whether an initial
+	update or a Refresh, MUST send a Refresh message before the lease elapses, or else the records
+	will be removed by the server.</t>
+
+	<t>Requestors SHOULD Refresh resource records after 75% of the original lease has
+	elapsed. If the requestor uses UDP and does not receive a response from the server, the
+	requestor SHOULD retry after 2 seconds. The requestor SHOULD continue to retry, doubling the
+	length of time between each retry, or retry using TCP.</t>
+
+	<t>For Refresh messages, the server is expected to return an Update Lease option, if
+	supported, just as with the initial update. As with the initial update, the requestor MUST
+	use the interval(s) specified by the server when determining when to send the next
+	Refresh message.</t>
+
+	<t>When sending Refresh messages, the requestor MUST include an Update Lease option, as it
+	did for the initial Update. The Update Lease option MAY either specify the same
+	intervals as in the initial Update, or MAY use the values returned by the server in the
+	previous Update, whether it was an initil Update or a Refresh.</t>
+
+	<section>
+	  <name>Coalescing Refresh Messages</name>
+          <t>If the requestor has performed multiple successful updates with a single server,
+          the requestor MAY include Refreshes for all such updates to that server in a single
+          message. This effectively places all records for a requestor on the same expiration
+          schedule, reducing network traffic due to Refreshes.</t>
+
+	  <t>In doing so, the requestor includes in the Refresh message all existing updates to
+	  the server, including those not yet close to expiration, so long as at least one
+	  resource record in the message has elapsed at least 75% of its original lease. If the
+	  requestor uses UDP, the requestor MUST NOT coalesce Refresh messages if doing so would
+	  cause truncation of the message; in this case, multiple messages or TCP should be
+	  used.</t>
+
+	  <t>Requestors SHOULD NOT send a Refresh messages when all of the records in the
+	  Refresh have more than 50% of their lease interval remaining before expiry. However,
+	  there may be cases where the requestor needs to send an early refresh, and it MAY do
+	  so. For example, a power-constrained device may need to send an update when the radio
+	  is powered so as to avoid having to power it up later.</t>
+
+	  <t>Another case where this may be needed is if the lease interval registered with the
+	  server is no longer appropriate and the Requestor wishes to negotiate a different
+	  lease interval. However, in this case, if the server does not honor the requested
+	  interval in its response, the requestor MUST NOT retry this negotiation.</t>
+	</section>
+      </section>
+
+      <section>
+	<name>Server Behavior</name>
+        <t>Upon receiving a valid Refresh Request, the server MUST send an acknowledgment. This
+        acknowledgment is identical to the Update Response format described in <xref
+        target="update"/> "Update Message Format", and contains the new lease of the resource
+        records being Refreshed.  The server MUST NOT increment the SOA serial number of a zone
+        as the result of a Refresh.</t>
+
+	<t>However, the server's state may not match what the client expects.  In this case, a
+	Refresh may actually appear to be an Update from the server's perspective. In this case,
+	if the Update changes the contents of the zone, the server MUST update the zone serial
+	number.</t>
       </section>
     </section>
 
