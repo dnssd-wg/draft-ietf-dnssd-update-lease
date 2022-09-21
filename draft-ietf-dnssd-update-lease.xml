@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
-<rfc category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-01" ipr="trust200902"
+<rfc category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-02" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
      scripts="Common,Latin" sortRefs="false"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
@@ -38,7 +38,7 @@
       </address>
     </author>
 
-    <date year='2022' month='April' day='24'/>
+    <date year='2022' month='July' day='11'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <keyword>DNS Update</keyword>
