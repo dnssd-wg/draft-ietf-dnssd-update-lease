@@ -271,9 +271,17 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 
     <section>
       <name>Garbage Collection</name>
-      <t>If the Update Lease of a resource record elapses without being
-      refreshed, the server MUST NOT return the expired record in answers
-      to queries. The server MAY delete the record from its database.</t>
+
+      <t>If the Update Lease of a resource record elapses without being refreshed, the server
+      MUST NOT return the expired record in answers to queries. The server MAY delete the record
+      from its database. The lease interval(s) returned by the server to the requestor are used
+      in determining when the lease on a resource record has expired.</t>
+
+      <t>For all resource records other than a KEY record included in an update, the Update
+      Lease is the LEASE value in the Update Lease option. For KEY records, if the optional
+      KEY-LEASE value was included, this interval is used rather than the interval specified
+      in LEASE. If KEY-LEASE was not specified, the interval specified in LEASE is used.
+      </t>
     </section>
 
     <section title="Security Considerations">
