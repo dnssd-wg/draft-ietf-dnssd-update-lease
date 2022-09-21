@@ -134,16 +134,16 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       the basic (4-byte) variant and the extended (8-byte) variant.</t>
 
       <t>In the basic (4-byte) variant, the LEASE indicated in the
-      OPT RR applies to all resource records in the Update section.</t>
+      Update Lease option applies to all resource records in the Update section.</t>
 
       <t>In the extended (8-byte) variant, the Update Lease communicates two lease lifetimes.
-      The LEASE indicated in the
-      OPT RR applies to all resource records in the Update section *except* for KEY records.
-      The KEY-LEASE indicated in the
-      OPT RR applies to KEY records in the Update section.
-      This variant is used specifically for supporting the DNS-SD
-      Service Registration Protocol <xref target="I-D.ietf-dnssd-srp"/>.
-      </t>
+      The LEASE indicated in the Update Lease option applies to all resource records in the
+      Update section *except* for KEY records.  The KEY-LEASE indicated in the Update Lease
+      option applies to KEY records in the Update section.</t>
+
+      <t>The reason the KEY record can be given a special lease time is that this record is used
+      in the DNS-SD Service Registration Protocol <xref target="I-D.ietf-dnssd-srp"/> to reserve
+      a name (or names) when the service is not present.</t>
     </section>
 
     <section anchor="refresh">
