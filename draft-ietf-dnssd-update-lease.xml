@@ -306,8 +306,10 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 
     <section>
       <name>Acknowledgments</name>
-      <t>Thanks to Marc Krochmal and Kiren Sekar to their work in 2006 on the precursor to this document.
-      Thanks also to Roger Pantos and Chris Sharp for their contributions.</t>
+      <t>Thanks to Marc Krochmal and Kiren Sekar to their work in 2006 on the precursor to this
+      document.  Thanks also to Roger Pantos and Chris Sharp for their contributions. Thanks to
+      Chris Box, Esko Dijk, Jonathan Hui and Peter van Dijk for their reviews of this
+      document.</t>
     </section>
   </middle>
 
