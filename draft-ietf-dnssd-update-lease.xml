@@ -106,7 +106,7 @@
       Update messages <xref target="RFC2136"/>. This update MUST include the EDNS0 OPT RR, as
       described in <xref target="RFC6891"/>.  This OPT RR MUST include an EDNS0 Option as shown
       below.  Note that if a TSIG resource record (<xref target="RFC2845"/>) is included to
-      authenticate the update, the TSIG RR should appear <em>after</em> the OPT RR, allowing the
+      authenticate the update, the TSIG RR MUST appear <em>after</em> the OPT RR, allowing the
       message digest in the TSIG to cover the OPT RR.</t>
 
       <t>The Update Lease EDNS0 option is formatted as follows:</t>
@@ -184,14 +184,14 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	<name>Refresh Message Format</name>
 
         <t>Refresh messages are formatted like Dynamic Update Leases Requests and Responses (see
-        <xref target="update"/> "Update Message Format"). The Refresh message should be
+        <xref target="update"/> "Update Message Format"). The Refresh message is
         constructed with the assumption that the result of the previous update or Refresh is
-        still in effect. The Refresh message should, in the case that the records added in a
+        still in effect. The Refresh message will, in the case that the records added in a
         previous update were for some reason garbage collected, result in those records being
         added again.</t>
 
-	<t>The Refresh message should not include any update prerequisites that would, if the state
-	produced by the previous update or Refresh is still in effect, fail. The update should not
+	<t>The Refresh message SHOULD NOT include any update prerequisites that would, if the state
+	produced by the previous update or Refresh is still in effect, fail. The update SHOULD NOT
 	be constructed to fail in the case that the state produced by the previous update or Refresh
 	has for some reason been garbage collected.</t>
 
@@ -238,7 +238,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	  the server, including those not yet close to expiration, so long as at least one
 	  resource record in the message has elapsed at least 75% of its original lease. If the
 	  requestor uses UDP, the requestor MUST NOT coalesce Refresh messages if doing so would
-	  cause truncation of the message; in this case, multiple messages or TCP should be
+	  cause truncation of the message; in this case, either multiple messages or TCP SHOULD be
 	  used.</t>
 
 	  <t>Requestors SHOULD NOT send a Refresh messages when all of the records in the
