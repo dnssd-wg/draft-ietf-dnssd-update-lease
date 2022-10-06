@@ -230,7 +230,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	<t>When sending Refresh messages, the requestor MUST include an Update Lease option, as it
 	did for the initial Update. The Update Lease option MAY either specify the same
 	intervals as in the initial Update, or MAY use the values returned by the server in the
-	previous Update, whether it was an initil Update or a Refresh.</t>
+	previous Update, whether it was an initial Update or a Refresh.</t>
 
 	<section>
 	  <name>Coalescing Refresh Messages</name>
@@ -311,7 +311,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 
     <section>
       <name>Acknowledgments</name>
-      <t>Thanks to Marc Krochmal and Kiren Sekar to their work in 2006 on the precursor to this
+      <t>Thanks to Marc Krochmal and Kiren Sekar for their work in 2006 on the precursor to this
       document.  Thanks also to Roger Pantos and Chris Sharp for their contributions. Thanks to
       Chris Box, Esko Dijk, Jonathan Hui and Peter van Dijk for their reviews of this
       document.</t>
