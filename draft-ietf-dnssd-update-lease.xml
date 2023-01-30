@@ -339,7 +339,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       <xref target="RFC8945"/> or public key signing should be required. Keys should have limited
       authority: compromise of a key should not result in compromise of the entire contents of one
       or more zones managed by the server. Key management strategy is out of scope for this document,
-      however. An example of a key management strategy can be found in <xref target="I.D-ietf-dnssd-srp"/>,
+      however. An example of a key management strategy can be found in <xref target="I-D.ietf-dnssd-srp"/>,
       which uses "first come, first-served naming" rather than an explicit trust establishment process
       to conver update permission to a set of records.</t>
     </section>
