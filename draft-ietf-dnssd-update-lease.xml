@@ -154,10 +154,12 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 
       <section anchor="requestor">
 	<name>Requestor Behavior</name>
-	<t>DNS Update requestors SHOULD send an Update Lease option with any DNS Update that is not
-	intended to be present indefinitely. The Update Lease option SHOULD specify a time
-	interval that is no shorter than 30 minutes (1800 seconds). Requestors that expect the
-	updated records to be relatively static MAY request appropriately longer leases.</t>
+	<t>DNS Update requestors MUST send an Update Lease option with any DNS Update that is
+	not intended to be present indefinitely. The Update Lease option SHOULD specify a time
+	interval that is no shorter than 30 minutes (1800 seconds). Requestors MAY specify a
+	shorter lease if they anticipate that the records being updated will change sooner than
+	30 minutes.  Requestors that expect the updated records to be relatively static MAY
+	request appropriately longer leases.</t>
 
 	<t>If the DNS response received by the requestor does not include an Update Lease option,
 	this is an indication that the DNS server does not support the Update Lease option. The
@@ -213,7 +215,8 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	the requestor's previous update or Refresh is still in effect. It also SHOULD NOT
 	include prerequisites that would fail if the records affected the previous update or
 	Refresh are no longer present--that is, the Refresh should also work as an initial
-	update.</t>
+	update. There may be cases where this is not possible, in which case the response from
+	the server can be used to determine how to proceed when the update fails.</t>
 
 	<t>An update message that changes the server state resulting from a previous Refresh or
 	update is an update, not a Refresh.</t>
@@ -232,10 +235,10 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	update or a Refresh, remain active, MUST send a Refresh message before the lease elapses, or else the records
 	will be removed by the server.</t>
 
-	<t>Requestors SHOULD Refresh resource records after approximately 75% of the original
-	lease has elapsed. This interval MUST be adjusted randomly by +/-10% so that after a
-	network restart, subsequent Renews do not remain synchronized across devices affected
-	by the power failure.</t>
+	<t>In order to prevent records expiring, requestors MUST Refresh resource records after
+	approximately 75% of the original lease has elapsed. This interval MUST be adjusted
+	randomly by +/-10% so that after a network restart, subsequent Renews do not remain
+	synchronized across devices affected by the power failure.</t>
 
 	<t>For Refresh messages, the server is expected to return an Update Lease option, if
 	supported, just as with the initial update. As with the initial update, the requestor MUST
@@ -260,8 +263,8 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	  the server, including those not yet close to expiration, so long as at least one
 	  resource record in the message has elapsed at least 75% of its original lease. If the
 	  requestor uses UDP, the requestor MUST NOT coalesce Refresh messages if doing so would
-	  cause truncation of the message; in this case, either multiple messages or TCP SHOULD be
-	  used.</t>
+	  cause truncation of the message; in this case, the requestor should either send multiple
+	  messages should use TCP to send the entire update at once.</t>
 
 	  <t>Requestors SHOULD NOT send a Refresh messages when all of the records in the
 	  Refresh have more than 50% of their lease interval remaining before expiry. However,
@@ -332,7 +335,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 
       <t>There may be some cost associated with renewing leases. A malicious (or buggy) client could renew
       at a high rate in order to overload the server more than it would be overloaded by query traffic. This
-      risk is present for regular DNS update as well. Servers SHOULD have a minimum interval before which
+      risk is present for regular DNS update as well. Servers MUST have a minimum interval before which
       they will not accept a Refresh for a recently updated record. Such messages MUST be silently ignored.</t>
 
       <t>Some authentication strategy should be used when accepting DNS updates. Shared secret
