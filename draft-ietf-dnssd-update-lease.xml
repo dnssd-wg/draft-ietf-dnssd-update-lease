@@ -84,13 +84,13 @@
     </section>
 
     <section>
+
       <name>Conventions and Terminology Used in this Document</name>
-      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-      "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY",
-      and "OPTIONAL" in this document are to be interpreted as described
-      in "Key words for use in RFCs to Indicate Requirement Levels",
-      when, and only when, they appear in all capitals, as shown here
-      <xref target="RFC2119"/> <xref target="RFC8174"/>.</t>
+      <t>
+	The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+	"MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/>
+        <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.
+      </t>
     </section>
 
     <section>
@@ -105,7 +105,7 @@
       Dynamic DNS Update Leases Requests and Responses are formatted as standard DNS Dynamic
       Update messages <xref target="RFC2136"/>. This update MUST include the EDNS(0) OPT RR, as
       described in <xref target="RFC6891"/>.  This OPT RR MUST include an EDNS(0) Option as shown
-      below.  Note that if a TSIG resource record (<xref target="RFC2845"/>) is included to
+      below.  Note that if a TSIG resource record (<xref target="RFC8945"/>) is included to
       authenticate the update, the TSIG RR MUST appear <em>after</em> the OPT RR, allowing the
       message digest in the TSIG to cover the OPT RR.</t>
 
@@ -333,7 +333,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
     </references>
 
     <references title="Informative References">
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2845.xml"/>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8945.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml"/>
     </references>
   </back>
