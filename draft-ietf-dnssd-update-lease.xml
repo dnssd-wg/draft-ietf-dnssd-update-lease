@@ -314,9 +314,20 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       <t>The EDNS(0) OPTION CODE 2 has already been assigned for this DNS extension. This
       document appears in the registry with the name 'UL' and the status 'On-hold,' and a
       document reference to an older version of this document. When this document has been
-      approved, the IANA is asked to update the registry, retaining the value '2', changing the
-      name 'UL' to 'Update Lease', changing the status to 'Standard' and changing the reference
-      to refer to the final version of this document published by the RFC Editor.</t>
+      approved, the IANA is asked to update the registry as follows:</t>
+      <sourcecode>
+    OLD:
+        Value: 2
+        Name: UL
+	Status: On-hold
+        Reference: http://files.dns-sd.org/draft-sekar-dns-ul.txt
+
+    NEW:
+        Value: 2
+        Name: Update Lease
+	Status: Standard
+        Reference: [this document]
+      </sourcecode>
     </section>
 
     <section>
