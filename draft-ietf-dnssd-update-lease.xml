@@ -168,6 +168,12 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	interval(s) returned in this option when determining when to send Refresh messages. This
 	is true both if the interval(s) returned by the server are shorter and if they are
 	longer.</t>
+
+	<t>When sending an initial update, the requestor MUST delay the initial transmission by
+	a random amount of time from 0-3 seconds. This prevents synchronization of multiple
+	devices of the same type at a site upon recovery from a power failure. This requirement
+	applies only to the initial update on startup: since renews include a random factor as
+	well, any synchronization that occurs after such an event should quickly normalize.</t>
       </section>
 
       <section>
@@ -225,10 +231,10 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	update or a Refresh, remain active, MUST send a Refresh message before the lease elapses, or else the records
 	will be removed by the server.</t>
 
-	<t>Requestors SHOULD Refresh resource records after 75% of the original lease has
-	elapsed. If the requestor uses UDP and does not receive a response from the server, the
-	requestor SHOULD retry after 2 seconds. The requestor SHOULD continue to retry, doubling the
-	length of time between each retry, or retry using TCP.</t>
+	<t>Requestors SHOULD Refresh resource records after approximately 75% of the original
+	lease has elapsed. This interval MUST be adjusted randomly by +/-10% so that after a
+	network restart, subsequent Renews do not remain synchronized across devices affected
+	by the power failure.</t>
 
 	<t>For Refresh messages, the server is expected to return an Update Lease option, if
 	supported, just as with the initial update. As with the initial update, the requestor MUST
@@ -282,6 +288,14 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	if the Update changes the contents of the zone, the server MUST update the zone serial
 	number.</t>
       </section>
+    </section>
+
+    <section>
+      <name>Retransmission Strategy</name>
+      <t>The DNS protocol, including DNS updates, can operate over UDP or TCP. When using UDP, reliable
+      transmission must be guaranteed by retransmitting if a DNS UDP message is not acknowledged in a
+      reasonable interval. <xref target="RFC1035" section="4.2.1" sectionFormat="of"/> provides some
+      guidance on this topic, as does <xref target="RFC1536" section="1" sectionFormat="of"/>.</t>
     </section>
 
     <section>
@@ -345,6 +359,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
     <!-- <displayreference target="I-D.ietf-dnssd-hybrid" to="I-D.ietf-dnssd-hybrid"/> appears to not work in xml2rfc 2.6.2 -->
     <references title="Normative References">
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1035.xml"/>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1536.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2136.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6891.xml"/>
