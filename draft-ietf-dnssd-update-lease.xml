@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
-<rfc category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-03" ipr="trust200902"
+<rfc category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-04" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
@@ -38,7 +38,7 @@
       </address>
     </author>
 
-    <date year='2022' month='October' day='7'/>
+    <date year='2023' month='January' day='30'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <keyword>DNS Update</keyword>
@@ -358,13 +358,13 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
     OLD:
         Value: 2
         Name: UL
-	Status: On-hold
+        Status: On-hold
         Reference: http://files.dns-sd.org/draft-sekar-dns-ul.txt
 
     NEW:
         Value: 2
         Name: Update Lease
-	Status: Standard
+        Status: Standard
         Reference: [this document]
       </sourcecode>
     </section>
@@ -384,7 +384,6 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
     <!-- <displayreference target="I-D.ietf-dnssd-hybrid" to="I-D.ietf-dnssd-hybrid"/> appears to not work in xml2rfc 2.6.2 -->
     <references title="Normative References">
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1035.xml"/>
-      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1536.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2136.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6891.xml"/>
@@ -392,6 +391,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
     </references>
 
     <references title="Informative References">
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1536.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8945.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml"/>
