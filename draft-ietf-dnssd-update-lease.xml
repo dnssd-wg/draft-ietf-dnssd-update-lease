@@ -315,12 +315,33 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
     </section>
 
     <section title="Security Considerations">
-      <t>When DNS Update is enabled on an authoritative server,
-      the Security Considerations of that specification <xref target="RFC2136"/>
-      should be considered.</t>
+      <t><xref target="RFC2136" section="8" sectionFormat="of"/> describes problems that can occur
+      around DNS updates.  Servers implementing this specification should follow these recommendations.</t>
 
-      <t>The addition of a record lifetime to facilitate automated garbage collection
-      does not itself add any significant new security concerns.</t>
+      <t>Several additional issues can arise when relying on Update Lease. First, a too-long lease time is
+      not much different than no lease time: the records associated with this lease time will effectively
+      never be cleaned up. Servers implementing Update Lease should have a default upper bound on the maximum
+      acceptable value both for the LEASE and KEY-LEASE values sent by the client. Servers MAY provide a way
+      for the operator to change this upper limit. We recommend that the default values for these limits
+      should be 24 hours and 7 days, respectively.</t>
+
+      <t>The second issue is that a too-short lease can result in increased server load and a failure to
+      persist data subject to such a short lease. Servers implementing Update Lease MUST have a default
+      minimum lease interval that is acceptable. We recommend a minimum of 30 seconds for both the LEASE
+      and KEY-LEASE intervals.</t>
+
+      <t>There may be some cost associated with renewing leases. A malicious (or buggy) client could renew
+      at a high rate in order to overload the server more than it would be overloaded by query traffic. This
+      risk is present for regular DNS update as well. Servers SHOULD have a minimum interval before which
+      they will not accept a Refresh for a recently updated record. Such messages MUST be silently ignored.</t>
+
+      <t>Some authentication strategy should be used when accepting DNS updates. Shared secret
+      <xref target="RFC8945"/> or public key signing should be required. Keys should have limited
+      authority: compromise of a key should not result in compromise of the entire contents of one
+      or more zones managed by the server. Key management strategy is out of scope for this document,
+      however. An example of a key management strategy can be found in <xref target="I.D-ietf-dnssd-srp"/>,
+      which uses "first come, first-served naming" rather than an explicit trust establishment process
+      to conver update permission to a set of records.</t>
     </section>
 
     <section>
