@@ -91,6 +91,13 @@
 	"MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/>
         <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.
       </t>
+      <section>
+	<name>Abbreviations</name>
+	<dl>
+	  <dt>DNS-SD</dt><dd>DNS-based service discovery <xref target="RFC6763"/></dd>
+	  <dt>EDNS(0)</dt><dd>Extension Mechanism for DNS, version 0 <xref target="RFC6891"/></dd>
+	</dl>
+      </section>
     </section>
 
     <section>
@@ -154,7 +161,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 
 	<t>If the DNS response received by the requestor does not include an Update Lease option,
 	this is an indication that the DNS server does not support the Update Lease option. The
-	requestor SHOULD in this case continue sending refresh messages (see below) as if the
+	requestor SHOULD in this case continue sending Refresh messages (see below) as if the
 	server had returned an identical update lease option in its response.</t>
 
 	<t>If the DNS response does include an Update Lease option, the requestor MUST use the
@@ -182,7 +189,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       <name>Refresh Messages</name>
 
       <t>A Refresh message is a DNS Update message that is sent to the server after an initial
-      DNS Update has been sent, in order to prevent the updates records from being garbage
+      DNS Update has been sent, in order to prevent the update's records from being garbage
       collected.</t>
 
       <section>
@@ -195,10 +202,11 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
         previous update were for some reason garbage collected, result in those records being
         added again.</t>
 
-	<t>The Refresh message SHOULD NOT include any update prerequisites that would, if the state
-	produced by the previous update or Refresh is still in effect, fail. The update SHOULD NOT
-	be constructed to fail in the case that the state produced by the previous update or Refresh
-	has for some reason been garbage collected.</t>
+	<t>The Refresh message SHOULD NOT include any update prerequisites that would fail if
+	the requestor's previous update or Refresh is still in effect. It also SHOULD NOT
+	include prerequisites that would fail if the records affected the previous update or
+	Refresh are no longer present--that is, the Refresh should also work as an initial
+	update.</t>
 
 	<t>An update message that changes the server state resulting from a previous Refresh or
 	update is an update, not a Refresh.</t>
@@ -333,6 +341,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
     </references>
 
     <references title="Informative References">
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8945.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml"/>
     </references>
