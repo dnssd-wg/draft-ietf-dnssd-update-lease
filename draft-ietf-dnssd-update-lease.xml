@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
-<rfc category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-02" ipr="trust200902"
+<rfc category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-03" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
-     scripts="Common,Latin" sortRefs="false"
+     scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
   <front>
     <title abbrev='Dynamic DNS Update Leases'>
@@ -38,7 +38,7 @@
       </address>
     </author>
 
-    <date year='2022' month='July' day='11'/>
+    <date year='2022' month='October' day='7'/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <keyword>DNS Update</keyword>
@@ -315,8 +315,8 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       <name>Acknowledgments</name>
       <t>Thanks to Marc Krochmal and Kiren Sekar for their work in 2006 on the precursor to this
       document.  Thanks also to Roger Pantos and Chris Sharp for their contributions. Thanks to
-      Chris Box, Esko Dijk, Jonathan Hui and Peter van Dijk for their reviews of this
-      document.</t>
+      Chris Box, Esko Dijk, Jonathan Hui, Peter van Dijk, Abtin Keshvarzian, Nathan Dyck, Steve Hanna,
+      Gabriel Montenegro, and Kangping Dong for their reviews of this document.</t>
     </section>
   </middle>
 
