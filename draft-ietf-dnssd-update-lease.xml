@@ -184,7 +184,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	<t>DNS Servers implementing the Update Lease option MUST include an Update Lease option
 	in response to any successful DNS Update (RCODE=0) that includes an Update Lease option.
 	Servers MAY return different lease interval(s) than specified by the requestor, granting
-	relatively longer or shorter leases to reduce network traffic due to Refreshes, or
+ relatively longer or shorter leases to reduce network traffic due to Refresh Messages, or
 	reduce stale data, respectively.</t>
         <t>Note that both the 4-byte and 8-byte variant are valid on both clients and servers.
         If a server receives a 4-byte variant, it MUST respond with a 4-byte variant. If a client
@@ -206,24 +206,24 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 
         <t>Refresh messages are formatted like Dynamic Update Leases Requests and Responses (see
         <xref target="update"/> "Update Message Format"). The Refresh message is
-        constructed with the assumption that the result of the previous update or Refresh is
+        constructed with the assumption that the result of the previous update or Refresh message is
         still in effect. The Refresh message will, in the case that the records added in a
         previous update were for some reason garbage collected, result in those records being
         added again.</t>
 
 	<t>The Refresh message SHOULD NOT include any update prerequisites that would fail if
-	the requestor's previous update or Refresh is still in effect. It also SHOULD NOT
+ the requestor's previous update or Refresh message is still in effect. It also SHOULD NOT
 	include prerequisites that would fail if the records affected the previous update or
-	Refresh are no longer present--that is, the Refresh should also work as an initial
+ Refresh message are no longer present--that is, the Refresh message should also work as an initial
 	update. There may be cases where this is not possible, in which case the response from
 	the server can be used to determine how to proceed when the update fails.</t>
 
-	<t>An update message that changes the server state resulting from a previous Refresh or
-	update is an update, not a Refresh.</t>
+ <t>An update message that changes the server state resulting from a previous Refresh message or
+ update is an update, not a refresh.</t>
 
-	<t>The Update Lease option in a Refresh contains the desired new lease on Requests, and
+ <t>The Update Lease option in a Refresh message contains the desired new lease on Requests, and
 	the actual granted lease on Responses. The LEASE interval indicated in the Update Lease
-	option applies to all resource records in the Update section of the Refresh request, except that if a KEY-LEASE
+ option applies to all resource records in the Update section of the Refresh message request, except that if a KEY-LEASE
 	interval is included as well, that interval applies to any KEY records included in the
 	Update section.</t>
       </section>
@@ -231,11 +231,11 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       <section>
 	<name>Requestor Behavior</name>
 
-	<t>A requestor that intends that its records from a previous update, whether an initial
-	update or a Refresh, remain active, MUST send a Refresh message before the lease elapses, or else the records
+ <t>A requestor that intends its records from a previous update, whether an initial
+ update or a refresh, remain active, MUST send a Refresh message before the lease elapses, or else the records
 	will be removed by the server.</t>
 
-	<t>In order to prevent records expiring, requestors MUST Refresh resource records after
+ <t>In order to prevent records expiring, requestors MUST refresh resource records after
 	approximately 75% of the original lease has elapsed. This interval MUST be adjusted
 	randomly by +/-10% so that after a network restart, subsequent Renews do not remain
 	synchronized across devices affected by the power failure.</t>
@@ -248,16 +248,16 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	<t>When sending Refresh messages, the requestor MUST include an Update Lease option, as it
 	did for the initial Update. The Update Lease option MAY either specify the same
 	intervals as in the initial Update, or MAY use the values returned by the server in the
-	previous Update, whether it was an initial Update or a Refresh. As with Update responses,
+ previous Update, whether it was an initial Update or a refresh. As with Update responses,
         the requestor MUST use the intervals returned by the server in the response when determining when to
-        send the next refresh message.</t>
+        send the next Refresh message.</t>
 
 	<section>
 	  <name>Coalescing Refresh Messages</name>
           <t>If the requestor has performed multiple successful updates with a single server,
-          the requestor MAY include Refreshes for all such updates to that server in a single
+          the requestor MAY include Refresh messages for all such updates to that server in a single
           message. This effectively places all records for a requestor on the same expiration
-          schedule, reducing network traffic due to Refreshes.</t>
+          schedule, reducing network traffic due to Refresh messages.</t>
 
 	  <t>In doing so, the requestor includes in the Refresh message all existing updates to
 	  the server, including those not yet close to expiration, so long as at least one
@@ -267,8 +267,8 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	  messages should use TCP to send the entire update at once.</t>
 
 	  <t>Requestors SHOULD NOT send a Refresh messages when all of the records in the
-	  Refresh have more than 50% of their lease interval remaining before expiry. However,
-	  there may be cases where the requestor needs to send an early refresh, and it MAY do
+   Refresh message have more than 50% of their lease interval remaining before expiry. However,
+   there may be cases where the requestor needs to send an early Refresh message, and it MAY do
 	  so. For example, a power-constrained device may need to send an update when the radio
 	  is powered so as to avoid having to power it up later.</t>
 
@@ -281,14 +281,14 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 
       <section>
 	<name>Server Behavior</name>
-        <t>Upon receiving a valid Refresh Request, the server MUST send an acknowledgment. This
+        <t>Upon receiving a valid Refresh message Request, the server MUST send an acknowledgment. This
         acknowledgment is identical to the Update Response format described in <xref
         target="update"/> "Update Message Format", and contains the new lease of the resource
-        records being Refreshed.  The server MUST NOT increment the SOA serial number of a zone
-        as the result of a Refresh.</t>
+        records being refreshed.  The server MUST NOT increment the SOA serial number of a zone
+        as the result of a Refresh message.</t>
 
 	<t>However, the server's state may not match what the client expects.  In this case, a
-	Refresh may actually appear to be an Update from the server's perspective. In this case,
+ Refresh message may actually appear to be an Update from the server's perspective. In this case,
 	if the Update changes the contents of the zone, the server MUST update the zone serial
 	number.</t>
       </section>
@@ -336,7 +336,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       <t>There may be some cost associated with renewing leases. A malicious (or buggy) client could renew
       at a high rate in order to overload the server more than it would be overloaded by query traffic. This
       risk is present for regular DNS update as well. Servers MUST have a minimum interval before which
-      they will not accept a Refresh for a recently updated record. Such messages MUST be silently ignored.</t>
+      they will not accept a Refresh message for a recently updated record. Such messages MUST be silently ignored.</t>
 
       <t>Some authentication strategy should be used when accepting DNS updates. Shared secret
       <xref target="RFC8945"/> or public key signing should be required. Keys should have limited
@@ -344,7 +344,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       or more zones managed by the server. Key management strategy is out of scope for this document,
       however. An example of a key management strategy can be found in <xref target="I-D.ietf-dnssd-srp"/>,
       which uses "first come, first-served naming" rather than an explicit trust establishment process
-      to conver update permission to a set of records.</t>
+      to convey update permission to a set of records.</t>
     </section>
 
     <section>
