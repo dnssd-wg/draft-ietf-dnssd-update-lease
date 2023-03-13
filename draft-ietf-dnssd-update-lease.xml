@@ -256,10 +256,11 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	or a Refresh, remain active, MUST send a Refresh message before the lease elapses, or else the records
 	will be removed by the server.</t>
 
-	<t>In order to prevent records expiring, requestors MUST refresh resource records after
-	approximately 75% of the original lease has elapsed. This interval MUST be adjusted
-	randomly by +/-10% so that after a network restart, subsequent Refreshes do not remain
-	synchronized across devices affected by the power failure.</t>
+	<t>In order to prevent records expiring, requestors MUST refresh resource records before they
+	expire. At the time of registration, the client computes an interval that is 80% of the lease
+	time plus a random offset between 0 and 5% of the lease time. The random offset is to prevent
+	refreshes from being synchronized. When this interval has expired, the client MUST refresh the
+	message if the data in the initial Registration should continue to be advertised.</t>
 
 	<t>For Refresh messages, the server is expected to return an Update Lease option, if
 	supported, just as with the initial Registration. As with the Registration, the
@@ -344,28 +345,32 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       <t><xref target="RFC2136" section="8" sectionFormat="of"/> describes problems that can occur
       around DNS updates.  Servers implementing this specification should follow these recommendations.</t>
 
-      <t>Several additional issues can arise when relying on Update Lease. First, a too-long lease time is
+      <t>Several additional issues can arise when relying on the Update Lease option. First, a too-long lease time is
       not much different than no lease time: the records associated with this lease time will effectively
       never be cleaned up. Servers implementing Update Lease should have a default upper bound on the maximum
       acceptable value both for the LEASE and KEY-LEASE values sent by the client. Servers MAY provide a way
       for the operator to change this upper limit. We recommend that the default values for these limits
       should be 24 hours and 7 days, respectively.</t>
 
-      <t>The second issue is that a too-short lease can result in increased server load and a failure to
-      persist data subject to such a short lease. Servers implementing Update Lease MUST have a default
-      minimum lease interval that is acceptable. We recommend a minimum of 30 seconds for both the LEASE
-      and KEY-LEASE intervals.</t>
+      <t>The second issue is that a too-short lease can result in increased server load as
+      requestors rapidly renew the lease. A delay in renewing could result in the data being
+      removed prematurely.  Servers implementing Update Lease MUST have a default minimum lease
+      interval that avoids this issue. We RECOMMEND a minimum of 30 seconds for both the LEASE
+      and KEY-LEASE intervals. However, in most cases, much longer lease times (for example, an hour)
+      are RECOMMENDED.</t>
 
-      <t>There may be some cost associated with renewing leases. A malicious (or buggy) client could renew
-      at a high rate in order to overload the server more than it would be overloaded by query traffic. This
-      risk is present for regular DNS update as well. Servers MUST have a minimum interval before which
-      they will not accept a Refresh for a recently updated record. Such messages MUST be silently ignored.</t>
+      <t>There may be some cost associated with renewing leases. A malicious (or buggy) client
+      could renew at a high rate in order to overload the server more than it would be
+      overloaded by query traffic. This risk is present for regular DNS update as well. The
+      server MUST enforce a minimum interval between updates. After a Refresh or Registration
+      has been successfully processed and acknowledged, another Update of either type from the
+      client during that interval MUST be silently ignored by the server.</t>
 
       <t>Some authentication strategy should be used when accepting DNS updates. Shared secret
       <xref target="RFC8945"/> or public key signing should be required. Keys should have limited
       authority: compromise of a key should not result in compromise of the entire contents of one
-      or more zones managed by the server. Key management strategy is out of scope for this document,
-      however. An example of a key management strategy can be found in <xref target="I-D.ietf-dnssd-srp"/>,
+      or more zones managed by the server. Key management strategy is out of scope for this document.
+      An example of a key management strategy can be found in <xref target="I-D.ietf-dnssd-srp"/>,
       which uses "first come, first-served naming" rather than an explicit trust establishment process
       to conver update permission to a set of records.</t>
     </section>
