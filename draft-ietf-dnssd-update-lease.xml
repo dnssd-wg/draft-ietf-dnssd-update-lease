@@ -152,6 +152,20 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       in the DNS-SD Service Registration Protocol <xref target="I-D.ietf-dnssd-srp"/> to reserve
       a name (or names) when the service is not present.</t>
 
+      <section anchor="update-refresh">
+	<name>Types of DNS Update Request messages</name>
+	<t>This document describes two types of updates: Registrations and Refreshes. A
+	Registration is a DNS Update Request that is intended to add information not already
+	present on the DNS server. A Refresh is intended simply to renew the lease on a previous
+	Registration without changing anything. Both messages are DNS Update messages, so the
+	term "DNS Update message" is to specify behavior that is the same for both types of
+	DNS Update message.</t>
+
+	<t>In some cases it may be necessary to add new information without removing old information.
+	For the purpose of this document, such messages are referred to as Registrations, although
+	in effect they may also refresh whatever information is unchanged from a previous registration.</t>
+      </section>
+
       <section anchor="requestor">
 	<name>Requestor Behavior</name>
 	<t>DNS Update requestors MUST send an Update Lease option with any DNS Update that is
@@ -171,12 +185,19 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	is true both if the interval(s) returned by the server are shorter and if they are
 	longer.</t>
 
-	<t>When sending an initial update, the requestor MUST delay the initial transmission by
-	a random amount of time across the range of 0-3000 milliseconds, with a granularity of
-	no more than 10 milliseconds. This prevents synchronization of multiple devices of the
-	same type at a site upon recovery from a power failure. This requirement applies only to
-	the initial update on startup: since renews include a random factor as well, any
-	synchronization that occurs after such an event should quickly normalize.</t>
+	<t>When sending a Registration, the requestor MUST delay the initial transmission by a
+	random amount of time across the range of 0-3000 milliseconds, with a granularity of no
+	more than 10 milliseconds. This prevents synchronization of multiple devices of the same
+	type at a site upon recovery from a power failure. This requirement applies only to the
+	initial Registration on startup: since Refreshes include a random factor as well, any
+	synchronization that occurs after such an event should quickly randomize.</t>
+
+	<t>Note: the requirement for 10ms granularity is a scheduling requirement intended to
+	result in an even spread of requests, so that every request doesn't come an exact number
+	of seconds after startup. This requirement should not be construed as requiring anything
+	of the link layer on which the packet is transmitted: the link layer may well impose its
+	own constraints on the timing at which a message is sent, and this document does not
+	claim to override such constraints.</t>
       </section>
 
       <section>
@@ -206,56 +227,57 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 
         <t>Refresh messages are formatted like Dynamic Update Leases Requests and Responses (see
         <xref target="update"/> "Update Message Format"). The Refresh message is
-        constructed with the assumption that the result of the previous update or Refresh is
+        constructed with the assumption that the result of the previous Registration or Refresh is
         still in effect. The Refresh message will, in the case that the records added in a
         previous update were for some reason garbage collected, result in those records being
         added again.</t>
 
 	<t>The Refresh message SHOULD NOT include any update prerequisites that would fail if
-	the requestor's previous update or Refresh is still in effect. It also SHOULD NOT
-	include prerequisites that would fail if the records affected the previous update or
-	Refresh are no longer present--that is, the Refresh should also work as an initial
-	update. There may be cases where this is not possible, in which case the response from
-	the server can be used to determine how to proceed when the update fails.</t>
+	the requestor's previous Registration or Refresh is still in effect. It also SHOULD NOT
+	include prerequisites that would fail if the records affected the previous Registration or
+	Refresh are no longer present--that is, the Refresh should also work as a Registration.
+	There may be cases where this is not possible, in which case the response from
+	the server can be used to determine how to proceed when the Refresh fails.</t>
 
 	<t>An update message that changes the server state resulting from a previous Refresh or
-	update is an update, not a Refresh.</t>
+	Registration is a Registration, not a Refresh.</t>
 
-	<t>The Update Lease option in a Refresh contains the desired new lease on Requests, and
-	the actual granted lease on Responses. The LEASE interval indicated in the Update Lease
-	option applies to all resource records in the Update section of the Refresh request, except that if a KEY-LEASE
-	interval is included as well, that interval applies to any KEY records included in the
-	Update section.</t>
+	<t>The Update Lease option in a Refresh message contains the desired new lease for
+	Requests, and the actual granted lease for Responses. The LEASE interval indicated in the
+	Update Lease option applies to all resource records in the Update section of the Refresh
+	request, except that if a KEY-LEASE interval is included as well, that interval applies
+	to any KEY records included in the Update section.</t>
       </section>
 
       <section>
 	<name>Requestor Behavior</name>
 
-	<t>A requestor that intends that its records from a previous update, whether an initial
-	update or a Refresh, remain active, MUST send a Refresh message before the lease elapses, or else the records
+	<t>A requestor that intends that its records from a previous update, whether a Registration
+	or a Refresh, remain active, MUST send a Refresh message before the lease elapses, or else the records
 	will be removed by the server.</t>
 
-	<t>In order to prevent records expiring, requestors MUST Refresh resource records after
+	<t>In order to prevent records expiring, requestors MUST refresh resource records after
 	approximately 75% of the original lease has elapsed. This interval MUST be adjusted
-	randomly by +/-10% so that after a network restart, subsequent Renews do not remain
+	randomly by +/-10% so that after a network restart, subsequent Refreshes do not remain
 	synchronized across devices affected by the power failure.</t>
 
 	<t>For Refresh messages, the server is expected to return an Update Lease option, if
-	supported, just as with the initial update. As with the initial update, the requestor MUST
-	use the interval(s) specified by the server when determining when to send the next
-	Refresh message.</t>
+	supported, just as with the initial Registration. As with the Registration, the
+	requestor MUST use the interval(s) specified by the server when determining when to send
+	the next Refresh message.</t>
 
-	<t>When sending Refresh messages, the requestor MUST include an Update Lease option, as it
-	did for the initial Update. The Update Lease option MAY either specify the same
-	intervals as in the initial Update, or MAY use the values returned by the server in the
-	previous Update, whether it was an initial Update or a Refresh. As with Update responses,
-        the requestor MUST use the intervals returned by the server in the response when determining when to
-        send the next refresh message.</t>
+	<t>When sending Refresh messages, the requestor MUST include an Update Lease option, as
+	it did for the initial Registration. The Update Lease option MAY either specify the same
+	intervals as in the initial Registration, or MAY use the values returned by the server
+	in the previous Update Response, whether it was a response to a Registration a
+	Refresh. As with responses to Registrations, the requestor MUST use the intervals
+	returned by the server in the response when determining when to send the next Refresh
+	message.</t>
 
 	<section>
 	  <name>Coalescing Refresh Messages</name>
-          <t>If the requestor has performed multiple successful updates with a single server,
-          the requestor MAY include Refreshes for all such updates to that server in a single
+          <t>If the requestor has performed multiple successful Registrations with a single server,
+          the requestor MAY include Refreshes for all such Registrations to that server in a single
           message. This effectively places all records for a requestor on the same expiration
           schedule, reducing network traffic due to Refreshes.</t>
 
@@ -264,11 +286,11 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	  resource record in the message has elapsed at least 75% of its original lease. If the
 	  requestor uses UDP, the requestor MUST NOT coalesce Refresh messages if doing so would
 	  cause truncation of the message; in this case, the requestor should either send multiple
-	  messages should use TCP to send the entire update at once.</t>
+	  messages or should use TCP to send the entire update at once.</t>
 
 	  <t>Requestors SHOULD NOT send a Refresh messages when all of the records in the
 	  Refresh have more than 50% of their lease interval remaining before expiry. However,
-	  there may be cases where the requestor needs to send an early refresh, and it MAY do
+	  there may be cases where the requestor needs to send an early Refresh, and it MAY do
 	  so. For example, a power-constrained device may need to send an update when the radio
 	  is powered so as to avoid having to power it up later.</t>
 
@@ -288,8 +310,8 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
         as the result of a Refresh.</t>
 
 	<t>However, the server's state may not match what the client expects.  In this case, a
-	Refresh may actually appear to be an Update from the server's perspective. In this case,
-	if the Update changes the contents of the zone, the server MUST update the zone serial
+	Refresh may actually appear to be a Registration, from the server's perspective. If the
+	Refresh changes the contents of the zone, the server MUST update the zone serial
 	number.</t>
       </section>
     </section>
@@ -310,10 +332,11 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       from its database. The lease interval(s) returned by the server to the requestor are used
       in determining when the lease on a resource record has expired.</t>
 
-      <t>For all resource records other than a KEY record included in an update, the Update
-      Lease is the LEASE value in the Update Lease option. For KEY records, if the optional
-      KEY-LEASE value was included, this interval is used rather than the interval specified
-      in LEASE. If KEY-LEASE was not specified, the interval specified in LEASE is used.
+      <t>For all resource records other than a KEY record included in a DNS Update request, the
+      Update Lease is the LEASE value in the Update Lease option. For KEY records, if the
+      optional KEY-LEASE value was included, this interval is used rather than the interval
+      specified in LEASE. If KEY-LEASE was not specified, the interval specified in LEASE is
+      used.
       </t>
     </section>
 
@@ -374,7 +397,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       <t>Thanks to Marc Krochmal and Kiren Sekar for their work in 2006 on the precursor to this
       document.  Thanks also to Roger Pantos and Chris Sharp for their contributions. Thanks to
       Chris Box, Esko Dijk, Jonathan Hui, Peter van Dijk, Abtin Keshvarzian, Nathan Dyck, Steve Hanna,
-      Gabriel Montenegro, and Kangping Dong for their reviews of this document.</t>
+      Gabriel Montenegro, Kangping Dong, and Tim Wicinski for their reviews of this document.</t>
     </section>
   </middle>
 
