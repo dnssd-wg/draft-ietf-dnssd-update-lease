@@ -207,11 +207,16 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	Servers MAY return different lease interval(s) than specified by the requestor, granting
 	relatively longer or shorter leases to reduce network traffic due to Refreshes, or
 	reduce stale data, respectively.</t>
-        <t>Note that both the 4-byte and 8-byte variant are valid on both clients and servers.
-        If a server receives a 4-byte variant, it MUST respond with a 4-byte variant. If a client
-        sends an 8-byte variant, it MUST accept either an 8-byte variant or a 4-byte variant in
-        the response. If it receives a 4-byte variant, it MUST assume that both the key lease and
-        update lease values are the same on the server.</t>
+        <t>Note that both the 4-byte and 8-byte variant are valid on both clients and servers, but
+	clients and servers may exist that do not support the newer 8-byte variant. Therefore,
+	clients and servers that do support this variant must account for the possibility that
+	the server with which they are communicating does not.</t>
+	<t>A client that receives a 4-byte variant from a server when it sent an 8-byte variant
+	MUST treat the 4-byte variant as specifying both the lease time and the key lease time.
+	A server that supports the 8-byte variant MUST treat the 4-byte variant as specifying
+	both the lease time and the key lease time. When a server receives a 4-byte variant, it
+	MUST respond with a 4-byte variant. In this case the key and the other records expire at
+	the same time.</t>
       </section>
     </section>
 
