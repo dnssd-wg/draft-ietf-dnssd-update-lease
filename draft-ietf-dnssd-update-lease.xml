@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
-<rfc category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-06" ipr="trust200902"
+<rfc category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-latest" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
@@ -38,19 +38,30 @@
       </address>
     </author>
 
-    <date year='2023' month='March' day='26'/>
+    <date/>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <keyword>DNS Update</keyword>
-    <keyword>RFC</keyword>
-    <keyword>Request for Comments</keyword>
-    <keyword>I-D</keyword>
-    <keyword>Internet-Draft</keyword>
     <abstract>
       <t>This document describes an EDNS(0) option that can be used by DNS Update requestors and
       DNS servers to include a lease lifetime in a DNS Update or response, allowing a server to garbage collect stale
       resource records that have been added by DNS Updates</t>
     </abstract>
+    <note removeInRFC="true">
+      <name>About This Document</name>
+      <t>
+        The latest revision of this draft can be found at <eref target="https://dnssd-wg.github.io/draft-ietf-dnssd-update-lease/draft-ietf-dnssd-update-lease.html"/>.
+        Status information for this document may be found at <eref target="https://datatracker.ietf.org/doc/draft-ietf-dnssd-update-lease/"/>.
+      </t>
+      <t>
+        Discussion of this document takes place on the
+        DNSSD Working Group mailing list (<eref target="mailto:dnssd@ietf.org"/>),
+        which is archived at <eref target="https://mailarchive.ietf.org/arch/browse/dnssd/"/>.
+        Subscribe at <eref target="https://www.ietf.org/mailman/listinfo/dnssd/"/>.
+      </t>
+      <t>Source for this draft and an issue tracker can be found at
+        <eref target="https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease"/>.</t>
+    </note>
   </front>
 
   <middle>
