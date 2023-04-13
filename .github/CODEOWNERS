@@ -1,0 +1,3 @@
+# Automatically generated CODEOWNERS
+# Regenerate with `make update-codeowners`
+draft-ietf-dnssd-update-lease.xml cheshire@apple.com mellon@fugue.com
