@@ -1,0 +1,915 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2023-04-16T01:19:13.751408+00:00",
+  "repo": "dnssd-wg/draft-ietf-dnssd-update-lease",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 9,
+      "id": "I_kwDOIBvzCM5VFM2n",
+      "title": "SHOULD is insufficiently described",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/9",
+      "state": "CLOSED",
+      "author": "chris-box",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "During shepherd review, I've identified that the current text deviates from the content guidelines, which may make it difficult to pass Last Call and IESG review. \r\n\r\nThis github issue is about one of those.\r\n\r\nNearly all the uses of SHOULD in the document fail to state:\r\n- valid reasons for varying from the recommendation, and\r\n- the implications of doing so.\r\n\r\nTo resolve this, the above could be added, or alternatively we could downgrade to the non-normative should.\r\n\r\n",
+      "createdAt": "2022-10-28T15:28:58Z",
+      "updatedAt": "2023-01-30T17:03:44Z",
+      "closedAt": "2023-01-30T17:03:44Z",
+      "comments": []
+    },
+    {
+      "number": 10,
+      "id": "I_kwDOIBvzCM5VFO9-",
+      "title": "Security Considerations too short",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/10",
+      "state": "CLOSED",
+      "author": "chris-box",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "The content guidelines say\r\n\r\n> The text of [the Security Considerations] section must have a meaningful exploration of security issues raised by the proposal, which should include both risks and a description of solutions or workarounds. It is rare that technical work can legitimately make a claim like \"This protocol introduces no security considerations,\" so it needs to be fairly obvious for that to be believable, or the document will be returned for further development. Procedural documents, however, more commonly can claim no added security risk.\r\n\r\nI think the sentence:\r\n\r\n> The addition of a record lifetime to facilitate automated garbage collection does not itself add any significant new security concerns.\r\n\r\nstruggles to meet the threshold of \"meaningful\". Can we articulate the types of attacks we have thought about (e.g. extremely short lifetimes), and our conclusion that they are not a problem?\r\n\r\n",
+      "createdAt": "2022-10-28T15:36:01Z",
+      "updatedAt": "2023-01-30T16:44:51Z",
+      "closedAt": "2023-01-30T16:44:51Z",
+      "comments": []
+    },
+    {
+      "number": 11,
+      "id": "I_kwDOIBvzCM5VFSN9",
+      "title": "Timers",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/11",
+      "state": "CLOSED",
+      "author": "chris-box",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "The \"common issues\" for TSV area include this one:\r\n\r\n> If a protocol contains timers, the reviewer should consider whether there is a default value given, or a formula/algorithm for managing the timer. Is there potential for multiple nodes, connections, or other protocol instances have their timers synchronize and cause undesirable effects? E.g. should the timer be randomly dithered.\r\n\r\nWe have these timers:\r\nLEASE (requestor SHOULD be >=1800, server can do what they like)\r\nKEY-LEASE (ditto)\r\nUDP initial retry (SHOULD be 2s)\r\nUDP retry backoff algorithm (SHOULD be doubling)\r\n\r\nTo meet the criteria we'll need to add default values or say something else about it. And we'll need to consider undesirable effects. Links to issue #10.",
+      "createdAt": "2022-10-28T15:45:18Z",
+      "updatedAt": "2023-01-30T16:15:41Z",
+      "closedAt": "2023-01-30T16:15:41Z",
+      "comments": [
+        {
+          "author": "EskoDijk",
+          "authorAssociation": "NONE",
+          "body": "The current requirements for the timers are rather deterministic; so a possible scenario where synchronization occurs is e.g. an entire floor/wing of lighting IoT devices where power is switched off and switched on again. These IoT lights would then all try to register via SRP, with update-lease option, at about the same time. And also reregister at 75% of lease time all around the same time.\r\n\r\n* In lighting systems, it's quite common to have 100s/1000s of identical (networked) devices. So these would all register an identical service with identical lease time, if they would use DNS-SD / SRP. (Use of SRP for such systems is uncommon today but may be used in the future.)\r\n\r\nProbably the term 'SHOULD' was used for these timers to allow some local variation. But it may be better to make that explicit. E.g. \"re-register after 70-90% of lease time expired at a random time\" or so.\r\n",
+          "createdAt": "2022-10-31T10:42:45Z",
+          "updatedAt": "2022-10-31T10:42:45Z"
+        },
+        {
+          "author": "chris-box",
+          "authorAssociation": "MEMBER",
+          "body": "I tend to agree that explicit wording on variation would be better.",
+          "createdAt": "2023-01-26T14:33:31Z",
+          "updatedAt": "2023-01-26T14:33:31Z"
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "id": "I_kwDOIBvzCM5VFTJN",
+      "title": "IANA Considerations",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/12",
+      "state": "CLOSED",
+      "author": "chris-box",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "We're asked to make IANA Considerations super clear.\r\n\r\nBorrowing one of their provided examples, this would be clearer:\r\n```\r\n    IANA is asked to make the following change in the DNS EDNS0 Option Codes (OPT) registry:\r\n\r\n    OLD:\r\n        Value: 2\r\n        Name: UL\r\n\tStatus: On-hold\r\n        Reference: http://files.dns-sd.org/draft-sekar-dns-ul.txt\r\n\r\n    NEW:    \r\n        Value: 2\r\n        Name: Update Lease\r\n\tStatus: Standard\r\n        Reference: this document\r\n```",
+      "createdAt": "2022-10-28T15:48:39Z",
+      "updatedAt": "2023-01-30T15:47:26Z",
+      "closedAt": "2023-01-30T15:47:26Z",
+      "comments": [
+        {
+          "author": "EskoDijk",
+          "authorAssociation": "NONE",
+          "body": "\"Reference: [this document]\" would be even more super-clearer ;-) ",
+          "createdAt": "2022-10-31T10:43:50Z",
+          "updatedAt": "2022-10-31T10:43:50Z"
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "id": "I_kwDOIBvzCM5VFVrR",
+      "title": "Editorial",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/13",
+      "state": "CLOSED",
+      "author": "chris-box",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "A few minor improvements can be made.\r\n\r\nThe first was identified by Tony Zhou in WGLC review: Section 4.1 \"continue sending refresh messages (see below) as if the server\", here \"refresh\" may be capitalized since other appearances of \"Refresh message\" in the article are capitalized.\r\n\r\nAt the top of section 5, it should probably read \"in order to prevent the update's records from being garbage collected.\"\r\n\r\nIn 5.1, the paragraph starting \"The Refresh message SHOULD NOT\" could be made easier to parse. Essentially they are saying don't add prerequisites that would cause the update to fail under either possible server state.\r\n\r\nThe following abbreviations lack expansions on first use, which is required by the content guidelines. These ones are not considered well-known in the RFC Editor's abbreviations list:\r\n\tEDNS(0) \tExtension Mechanisms for DNS (EDNS(0))\r\n\tDNS-SD   DNS-based Service Discovery (DNS-SD) ",
+      "createdAt": "2022-10-28T15:58:07Z",
+      "updatedAt": "2023-01-30T15:29:31Z",
+      "closedAt": "2023-01-30T15:29:31Z",
+      "comments": []
+    },
+    {
+      "number": 14,
+      "id": "I_kwDOIBvzCM5VFXtF",
+      "title": "ID Nits isn't happy",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/14",
+      "state": "CLOSED",
+      "author": "chris-box",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "The ID Nits tool complains about these.\r\n\r\n  == The document seems to lack the recommended RFC 2119 boilerplate, even if\r\n     it appears to use RFC 2119 keywords -- however, there's a paragraph with\r\n     a matching beginning. Boilerplate error?\r\n\r\n  -- Obsolete informational reference (is this intentional?): RFC 2845\r\n     (Obsoleted by RFC 8945)\r\n\r\n  == Outdated reference: A later version (-17) exists of\r\n     draft-ietf-dnssd-srp-15",
+      "createdAt": "2022-10-28T16:05:44Z",
+      "updatedAt": "2023-01-30T15:11:06Z",
+      "closedAt": "2023-01-30T15:11:06Z",
+      "comments": [
+        {
+          "author": "EskoDijk",
+          "authorAssociation": "NONE",
+          "body": "Looks like we should change RFC 2845 to 8945. The TSIG format wasn't changed by this obsoletion.",
+          "createdAt": "2022-10-31T10:48:05Z",
+          "updatedAt": "2022-10-31T10:48:05Z"
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "id": "I_kwDOIBvzCM5dg5E0",
+      "title": "10ms accuracy? is that too fine?",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/21",
+      "state": "CLOSED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Chris Box has raised the issue that a granularity of 10ms might be hard for some low-power devices, hence we shouldn't use a MUST.\r\n\r\nMy proposed fix for this is to say \"this restriction applies to the scheduling of the response. The network physical layer or link layer protocol may constrain the time at which the packet is actually sent.\"",
+      "createdAt": "2023-02-02T22:55:52Z",
+      "updatedAt": "2023-03-13T20:01:35Z",
+      "closedAt": "2023-03-13T20:01:35Z",
+      "comments": [
+        {
+          "author": "Abhayakara",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Updated in previous commit. Clarification is that 10ms is the schedule, but we can't control when the packet is actually transmitted.",
+          "createdAt": "2023-03-13T20:01:31Z",
+          "updatedAt": "2023-03-13T20:01:31Z"
+        }
+      ]
+    },
+    {
+      "number": 22,
+      "id": "I_kwDOIBvzCM5dg5UR",
+      "title": "Lease time variance is unclear",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/22",
+      "state": "CLOSED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "We currently say 75% +/- 10%. This is unclear. It's also arguably too broad a range\u2014maybe we should do 80-85%?",
+      "createdAt": "2023-02-02T22:57:08Z",
+      "updatedAt": "2023-03-13T20:01:00Z",
+      "closedAt": "2023-03-13T20:01:00Z",
+      "comments": [
+        {
+          "author": "Abhayakara",
+          "authorAssociation": "COLLABORATOR",
+          "body": "\t<t>In order to prevent records expiring, requestors MUST refresh resource records before they\r\n\texpire. At the time of registration, the client computes an interval that is 80% of the lease\r\n\ttime plus a random offset between 0 and 5% of the lease time. The random offset is to prevent\r\n\trefreshes from being synchronized. When this interval has expired, the client MUST refresh the\r\n\tmessage if the data in the initial Registration should continue to be advertised.</t>\r\n",
+          "createdAt": "2023-03-13T20:00:52Z",
+          "updatedAt": "2023-03-13T20:00:52Z"
+        }
+      ]
+    },
+    {
+      "number": 23,
+      "id": "I_kwDOIBvzCM5dg5dj",
+      "title": "Minimum (non-retransmission) update interval",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/23",
+      "state": "CLOSED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Personal thought: \"Servers MUST have a minimum interval before which they will not accept\" could be made a bit easier to parse, e.g. \"Servers MUST have a minimum interval for accepting Refreshes. Such messages that arrive before that time MUST be silently ignored.\"\r\n",
+      "createdAt": "2023-02-02T22:57:50Z",
+      "updatedAt": "2023-03-13T19:57:52Z",
+      "closedAt": "2023-03-13T19:57:52Z",
+      "comments": [
+        {
+          "author": "Abhayakara",
+          "authorAssociation": "COLLABORATOR",
+          "body": "      <t>There may be some cost associated with renewing leases. A malicious (or buggy) client\r\n      could renew at a high rate in order to overload the server more than it would be\r\n      overloaded by query traffic. This risk is present for regular DNS update as well. The\r\n      server MUST enforce a minimum interval between updates. After a Refresh or Registration\r\n      has been successfully processed and acknowledged, another Update of either type from the\r\n      client during that interval MUST be silently ignored by the server.</t>\r\n",
+          "createdAt": "2023-03-13T19:57:52Z",
+          "updatedAt": "2023-03-13T19:57:52Z"
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "id": "I_kwDOIBvzCM5dg5tq",
+      "title": "Missing \"or\" in compound sentence.",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/24",
+      "state": "CLOSED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This sentence seems wonky:\r\n\r\n If the requestor uses UDP, the requestor MUST NOT coalesce Refresh messages if doing so would cause truncation of the message; in this case, the requestor should either send multiple messages should use TCP to send the entire update at once.\r\n\r\nMaybe \"or should use TCP to send the entire update\"?",
+      "createdAt": "2023-02-02T22:59:05Z",
+      "updatedAt": "2023-03-13T19:54:26Z",
+      "closedAt": "2023-03-13T19:54:26Z",
+      "comments": [
+        {
+          "author": "Abhayakara",
+          "authorAssociation": "COLLABORATOR",
+          "body": "already fixed",
+          "createdAt": "2023-03-13T19:54:26Z",
+          "updatedAt": "2023-03-13T19:54:26Z"
+        }
+      ]
+    },
+    {
+      "number": 25,
+      "id": "I_kwDOIBvzCM5dg50O",
+      "title": "Relying on Update Lease, or relying on an Update Lease?",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/25",
+      "state": "CLOSED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "\"Several additional issues can arise when relying on Update Lease.\"\r\n\r\ncould this be \"when relying on an Update Lease\"? ",
+      "createdAt": "2023-02-02T22:59:36Z",
+      "updatedAt": "2023-03-13T19:53:51Z",
+      "closedAt": "2023-03-13T19:53:51Z",
+      "comments": [
+        {
+          "author": "Abhayakara",
+          "authorAssociation": "COLLABORATOR",
+          "body": "when relying on the update lease option",
+          "createdAt": "2023-03-13T19:53:51Z",
+          "updatedAt": "2023-03-13T19:53:51Z"
+        }
+      ]
+    },
+    {
+      "number": 26,
+      "id": "I_kwDOIBvzCM5dg5-6",
+      "title": "Reword sentence about too-short leases.",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/26",
+      "state": "CLOSED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "> The second issue is that a too-short lease can result in increased server load and a failure to persist data subject to such a short lease. Servers implementing Update Lease MUST have a default minimum lease\r\n\r\nThis sentence reads odd to me (but this could be me).\r\n\r\nThe second issue is that a lease which is too short can result in increased server load and a failure to persist data for such a lease. ",
+      "createdAt": "2023-02-02T23:00:26Z",
+      "updatedAt": "2023-03-13T19:53:16Z",
+      "closedAt": "2023-03-13T19:53:16Z",
+      "comments": [
+        {
+          "author": "Abhayakara",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Text update to follow.",
+          "createdAt": "2023-03-13T19:53:16Z",
+          "updatedAt": "2023-03-13T19:53:16Z"
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "id": "I_kwDOIBvzCM5dg6GJ",
+      "title": "Drop however",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/27",
+      "state": "CLOSED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "> Key management strategy is out of scope for this document, however. \r\n\r\nCan we drop the \"however\"?  It just is. ",
+      "createdAt": "2023-02-02T23:00:54Z",
+      "updatedAt": "2023-03-13T19:49:35Z",
+      "closedAt": "2023-03-13T19:49:34Z",
+      "comments": [
+        {
+          "author": "Abhayakara",
+          "authorAssociation": "COLLABORATOR",
+          "body": "upcoming commit",
+          "createdAt": "2023-03-13T19:49:34Z",
+          "updatedAt": "2023-03-13T19:49:34Z"
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "id": "I_kwDOIBvzCM5dg7CG",
+      "title": "Un-capitalize Refresh",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/28",
+      "state": "CLOSED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "One more thing - you capitalize Refresh, to describe Refresh messages, which is great.  But I notice in 5.2:\r\n\r\n> In order to prevent records expiring, requestors MUST Refresh resource records\r\n\r\nthat one I would say no. ",
+      "createdAt": "2023-02-02T23:04:43Z",
+      "updatedAt": "2023-03-13T19:48:53Z",
+      "closedAt": "2023-03-13T19:48:52Z",
+      "comments": [
+        {
+          "author": "Abhayakara",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Fixed in \"Fix the ambiguity Tim Wicinski was trying to fix between Update and Refresh by using Registration for initial messages rather than overloading Update.\"",
+          "createdAt": "2023-03-13T19:48:52Z",
+          "updatedAt": "2023-03-13T19:48:52Z"
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "id": "I_kwDOIBvzCM5hHRX9",
+      "title": "From Esko Dijk: 4-byte versus 8-byte unclarity",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/30",
+      "state": "OPEN",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "There was one possible unclarity, raised by the recent discussion on \u201cSRP use of Update Lease option variants\u201d:\r\nText states:\r\n \r\n                Note that both the 4-byte and 8-byte variant are valid on both clients and servers. If a server receives a 4-byte variant, it MUST respond with a 4-byte variant.\r\n \r\nDoes this sentence combo mean:\r\nServer MUST support 4-byte and 8-byte variant; and\r\nClient MUST support 4-byte and 8-byte variant.\r\n \r\nOr rather does it mean:\r\nServer MUST support 4-byte and 8-byte variant; and\r\nClient MUST support 4-byte variant and MAY support 8-byte variant.   (Since a 4-byte-only client would never receive an 8-byte variant!)\r\n \r\nDid we intend to say the former, or the latter, or leave it in the middle? In practice a client can be implemented fully without support for the 8-byte variant regardless of our intentions here.\r\nSo not even sure we need to do anything here, but wanted to highlight the potential unclarity.",
+      "createdAt": "2023-03-17T13:12:56Z",
+      "updatedAt": "2023-03-17T13:12:56Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOIBvzCM4_O7Nf",
+      "title": "Clean up abstract and mechanisms section.",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/1",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Use the correct term, requestor, rather than client, in the abstract. Delete some useless text in the mechanism section.",
+      "createdAt": "2022-09-19T22:35:51Z",
+      "updatedAt": "2022-09-19T22:36:04Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "72834c1c535c5249a153a4048608df053a1a8ea3",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "absmec",
+      "headRefOid": "b41f54aff3dbc96ce11e2bfbbdd98fd842719294",
+      "closedAt": "2022-09-19T22:36:04Z",
+      "mergedAt": "2022-09-19T22:36:04Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "1cd6c482a1997243c04d752ecd6a257f621e099e"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDOIBvzCM4_XYGJ",
+      "title": "Apply the rest of the change to the abstract and the Mechanisms section",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/2",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2022-09-21T16:29:49Z",
+      "updatedAt": "2022-09-21T16:30:06Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "1cd6c482a1997243c04d752ecd6a257f621e099e",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "absmec1",
+      "headRefOid": "b7c04c2e703bdd2bd16ca9dc1eae2038c8e91148",
+      "closedAt": "2022-09-21T16:30:06Z",
+      "mergedAt": "2022-09-21T16:30:06Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "03f6f2e3313b269c8692ababf358da9ad13305a4"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 3,
+      "id": "PR_kwDOIBvzCM4_Xa7m",
+      "title": "Clean up definition of EDNS0 option",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/3",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Old text was describing how the OPT RR is constructed as if the Update Lease option _is_ the OPT RR, which wasn't correct, and also included normative text overriding the EDNS0 RFC.  Get rid of normative text about recommended lease times in the definition of the option.",
+      "createdAt": "2022-09-21T16:41:53Z",
+      "updatedAt": "2022-09-21T16:42:02Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "03f6f2e3313b269c8692ababf358da9ad13305a4",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "edns0opt",
+      "headRefOid": "582e1b87e759f241b6d94c1e4d5692fb0730e8f7",
+      "closedAt": "2022-09-21T16:42:02Z",
+      "mergedAt": "2022-09-21T16:42:02Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "c8fc40dd5924a069bc9c4b23cd206bd01bc02142"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 4,
+      "id": "PR_kwDOIBvzCM4_XcFj",
+      "title": "More OPT RR -> Update Lease option. Explain why the KEY record is special.",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/4",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2022-09-21T16:47:05Z",
+      "updatedAt": "2022-09-21T16:47:11Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "c8fc40dd5924a069bc9c4b23cd206bd01bc02142",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "keyspecial",
+      "headRefOid": "1bf4953b8808be2d4a5773a476cbff36fb54ec1f",
+      "closedAt": "2022-09-21T16:47:11Z",
+      "mergedAt": "2022-09-21T16:47:11Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "43bcfb27791f363f61cb765e9e0d6b00983e437b"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDOIBvzCM4_XeES",
+      "title": "Reorganize sections about messages and server/requestor behavior",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/5",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Previously it was all mashed together, and during review was found to be fairly ambiguous. This change creates a new server behavior and requestor behavior section, and makes it clearer what the difference is between an initial update and a refresh. In particular, the fact that a server may not be able to distinguish between an initial update and a request is explictly acknowledged, and the implications discussed.",
+      "createdAt": "2022-09-21T16:56:12Z",
+      "updatedAt": "2022-09-21T16:56:20Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "43bcfb27791f363f61cb765e9e0d6b00983e437b",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "section-reorg",
+      "headRefOid": "b3dc26721f0b920890d08693b83d161f83382316",
+      "closedAt": "2022-09-21T16:56:20Z",
+      "mergedAt": "2022-09-21T16:56:20Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "6d6200c339c5161dc029f97897329be1bbc97ec4"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 6,
+      "id": "PR_kwDOIBvzCM4_Xp7Z",
+      "title": "Clarifications in the Garbage Collection section.",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/6",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Clarify that the server is authoritative for lease times. \r\n\r\nAdd text describing the KEY-LEASE interval and how it relates to garbage collection.",
+      "createdAt": "2022-09-21T17:47:44Z",
+      "updatedAt": "2022-09-21T17:47:52Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "6d6200c339c5161dc029f97897329be1bbc97ec4",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "garbage-collection-update",
+      "headRefOid": "e7e9a39327f343532d72c1fb3f28c052d0d92be5",
+      "closedAt": "2022-09-21T17:47:52Z",
+      "mergedAt": "2022-09-21T17:47:52Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "6867ed2071d3fcd12ffa5cd60fcef81d58164a4f"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 7,
+      "id": "PR_kwDOIBvzCM4_XqV7",
+      "title": "Update and clarify the IANA considerations section",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/7",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2022-09-21T17:49:40Z",
+      "updatedAt": "2022-09-21T17:49:48Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "6867ed2071d3fcd12ffa5cd60fcef81d58164a4f",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "iana-considerations",
+      "headRefOid": "abb591e660456b00884a8bc69a7df60533bf599c",
+      "closedAt": "2022-09-21T17:49:48Z",
+      "mergedAt": "2022-09-21T17:49:48Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "e13eb5c56c7dcf78bbd8fc615580c91f82feed61"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 8,
+      "id": "PR_kwDOIBvzCM4_Xq0L",
+      "title": "Update acknowledgments section",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/8",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2022-09-21T17:51:25Z",
+      "updatedAt": "2022-09-21T17:51:32Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "e13eb5c56c7dcf78bbd8fc615580c91f82feed61",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "acksection",
+      "headRefOid": "2d50476e4192343e3f144f6bc94e41c3ed0f74af",
+      "closedAt": "2022-09-21T17:51:32Z",
+      "mergedAt": "2022-09-21T17:51:32Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "df2bf1df1166d2a440425318080be2abb47fd187"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 15,
+      "id": "PR_kwDOIBvzCM5I0zUe",
+      "title": "Fix idnits issues raised by Chris Box and Eski Dijk",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/15",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "- The boilerplate included the name of the BCP rather than saying BCP 14, and idnits didn't like it.\r\n- TSIG has been updated, so reference the new RFC\r\n- The srp version nit should go away when the new version of this document is submitted, since that's generated automatically during the submission process.\r\n\r\nCloses #14",
+      "createdAt": "2023-01-30T15:10:37Z",
+      "updatedAt": "2023-01-30T15:11:04Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "d8d84c745939d4b91fb4b6ec20269aa22ae8fa8a",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "idnits-isnt-happy-14",
+      "headRefOid": "6c25eb7cfa9dcbbb4ea16b2147e2b4449f6a3dc8",
+      "closedAt": "2023-01-30T15:11:03Z",
+      "mergedAt": "2023-01-30T15:11:03Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "e852b05fa00d84f4920e34863cfcdd0ba9735b8e"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 16,
+      "id": "PR_kwDOIBvzCM5I07cJ",
+      "title": "Editorial fixes, from Chris Box's summary, issue #13",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/16",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fix some editorial nits reported by Chris Box, including adding an abbreviations list to the terminology section.\r\n\r\nCloses #13",
+      "createdAt": "2023-01-30T15:29:14Z",
+      "updatedAt": "2023-02-01T10:37:23Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "e852b05fa00d84f4920e34863cfcdd0ba9735b8e",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "editorial-chris-box-13",
+      "headRefOid": "a4a7b124519edad593e911da17f97a6aacd4ec51",
+      "closedAt": "2023-01-30T15:29:30Z",
+      "mergedAt": "2023-01-30T15:29:30Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "39fca577a3cb98360c7ca738da31292c62dfc39a"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 17,
+      "id": "PR_kwDOIBvzCM5I1CIN",
+      "title": "Update IANA considerations as requested, issue #12",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/17",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Update the IANA considerations section as requested on behalf of IANA by Chris, with Esko's proposed additional tweak.\r\n\r\nCloses #12",
+      "createdAt": "2023-01-30T15:47:13Z",
+      "updatedAt": "2023-01-30T15:47:25Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "39fca577a3cb98360c7ca738da31292c62dfc39a",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "iana-considerations-12",
+      "headRefOid": "80bba90fb818f7213f747f342e1c2f2d195b34f2",
+      "closedAt": "2023-01-30T15:47:24Z",
+      "mergedAt": "2023-01-30T15:47:24Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "5d5a023b17d71e7b7b87fcfa55133727679df326"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 18,
+      "id": "PR_kwDOIBvzCM5I1Mog",
+      "title": "Per the TSV area review, vary the lease renewal time randomly. Do not\u2026",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/18",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "\u2026 specify retransmission strategy here--rely on RFC1035 and RFC1536 instead.\r\n\r\nCloses #11",
+      "createdAt": "2023-01-30T16:15:28Z",
+      "updatedAt": "2023-02-01T10:47:56Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "5d5a023b17d71e7b7b87fcfa55133727679df326",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "tsv-area-review-11",
+      "headRefOid": "e817661c4e941c95fa3057086268440e1b5caf63",
+      "closedAt": "2023-01-30T16:15:39Z",
+      "mergedAt": "2023-01-30T16:15:39Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "c2d9f61e2c5399af4d0f6bb9359be72aba2b5f27"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 19,
+      "id": "PR_kwDOIBvzCM5I1XKc",
+      "title": "Update security considerations with some detail.",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/19",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As suggested by Chris and Esko, this documents some issues relating to lease durations, and requires servers to have default minimums and maximums for the key lease interval.\r\n\r\nCloses #10\r\n",
+      "createdAt": "2023-01-30T16:44:39Z",
+      "updatedAt": "2023-02-02T17:32:52Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "0e0da091040b56d6abc6223277819ab770f31591",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "security-considerations-too-short-10",
+      "headRefOid": "b8b67ddd4108ec4d21cca56400fa28e67a1e6760",
+      "closedAt": "2023-01-30T16:44:50Z",
+      "mergedAt": "2023-01-30T16:44:50Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "45e2e5c1b4cc647acfb7ca051664d225cfd6c3f4"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 20,
+      "id": "PR_kwDOIBvzCM5I1dDm",
+      "title": "Add justifications for SHOULDs or change them to MUST or shoulds.",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/20",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #9",
+      "createdAt": "2023-01-30T17:03:32Z",
+      "updatedAt": "2023-02-02T17:37:31Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "37eeab63513a377717e29d86a0fa58bb46cb56a9",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "should-insufficient-9",
+      "headRefOid": "d7c2ca38f261d1c35cd076cbf909ca67bb51d5e0",
+      "closedAt": "2023-01-30T17:03:43Z",
+      "mergedAt": "2023-01-30T17:03:43Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "cc2f5bf173b8b6c896bc9f5181a5248af021e36c"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOIBvzCM5MYvDG",
+          "commit": {
+            "abbreviatedOid": "d7c2ca3"
+          },
+          "author": "chris-box",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-02-02T17:37:31Z",
+          "updatedAt": "2023-02-02T17:37:31Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "Same comment as on another commit: would be good to be clear on whether this means 65% to 85%, or (75% +/- 10% of that).",
+              "createdAt": "2023-02-02T17:37:31Z",
+              "updatedAt": "2023-02-02T17:37:31Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "id": "PR_kwDOIBvzCM5JMhh8",
+      "title": "some edits on using Refresh messages, and a few typos",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/29",
+      "state": "CLOSED",
+      "author": "moonshiner",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Take a look at these, I probably messed up one or two. Will go back and double check later this morning. ",
+      "createdAt": "2023-02-03T11:41:27Z",
+      "updatedAt": "2023-03-13T20:55:29Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "5464facdd1b2e05981147d8fe1128631cfab5fee",
+      "headRepository": "moonshiner/draft-ietf-dnssd-update-lease",
+      "headRefName": "tjw-edits",
+      "headRefOid": "8206694f2fdf452bfea4e606a8d1dff70fbbce82",
+      "closedAt": "2023-03-13T19:22:00Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "Abhayakara",
+          "authorAssociation": "COLLABORATOR",
+          "body": "These changes are actually inconsistent. We say \"the latest update or refresh\", which used to not be capitalized, and this means the latest action that was taken on the database, not the message that triggered that action. So either it should be \"update message or refresh message\" or it should be \"update or refresh,\" not \"update or refresh message.\"\r\n\r\nI think the idea of capitalizing \"Refresh\" was to distinguish between the message and the transaction, but maybe I'm misremembering. Anyway, can you give this a think and see what occurs to you? I don't want to just ignore this pull request, but I don't think it's ready yet. :]",
+          "createdAt": "2023-02-17T03:48:38Z",
+          "updatedAt": "2023-02-17T03:48:38Z"
+        },
+        {
+          "author": "moonshiner",
+          "authorAssociation": "NONE",
+          "body": "I was concerned I had gotten inconsistent, and you are correct.  \r\n\r\nInitially I was making sure the document said \"refresh message\" when it was referring to one. \r\n\r\nI do like your idea of using \"Refresh\" for the message, but I would suggest writing \"Refresh message\" (or \"refresh message\" i'm open)  when it is the message.  Maybe that is overly obvious but it wasn't always to me. \r\n\r\nCan you look at this update?\r\n",
+          "createdAt": "2023-02-24T07:42:05Z",
+          "updatedAt": "2023-02-24T07:42:05Z"
+        },
+        {
+          "author": "Abhayakara",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The problem with this pull request is that it feels like it's making things even more confusing. We're distinguishing between updates and refreshes, both of which are Update messages. The text feels like it's tugging us in the direction that Refresh messages are a distinct message type, but they're not. So I think this PR makes things worse, not better.",
+          "createdAt": "2023-03-13T19:22:00Z",
+          "updatedAt": "2023-03-13T19:22:00Z"
+        },
+        {
+          "author": "Abhayakara",
+          "authorAssociation": "COLLABORATOR",
+          "body": "(I'll take a stab at doing what you are trying to do, Tim\u2014no worries!)",
+          "createdAt": "2023-03-13T19:22:28Z",
+          "updatedAt": "2023-03-13T19:22:28Z"
+        },
+        {
+          "author": "moonshiner",
+          "authorAssociation": "NONE",
+          "body": "Thanks! and Thanks for figuring our where I was going with this; and triple thanks for doing the checks. ",
+          "createdAt": "2023-03-13T19:49:05Z",
+          "updatedAt": "2023-03-13T19:49:05Z"
+        },
+        {
+          "author": "Abhayakara",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Yeah, sorry it took me so long to figure out what the issue was. I think\nyou signaled it pretty clearly, but I was too focused on the typography. :]\n\nOn Mon, Mar 13, 2023 at 3:49\u202fPM Tim Wicinski ***@***.***>\nwrote:\n\n> Thanks! and Thanks for figuring our where I was going with this; and\n> triple thanks for doing the checks.\n>\n> \u2014\n> Reply to this email directly, view it on GitHub\n> <https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/29#issuecomment-1466858505>,\n> or unsubscribe\n> <https://github.com/notifications/unsubscribe-auth/AA5USANRLXL355SN6LRIZVTW35233ANCNFSM6AAAAAAUQFEO34>\n> .\n> You are receiving this because you modified the open/close state.Message\n> ID: ***@***.***\n> com>\n>\n",
+          "createdAt": "2023-03-13T20:55:29Z",
+          "updatedAt": "2023-03-13T20:55:29Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 31,
+      "id": "PR_kwDOIBvzCM5MTmZ8",
+      "title": "Specify behavior with 4- and 8-byte variants more clearly.",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/pull/31",
+      "state": "MERGED",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2023-03-17T13:19:09Z",
+      "updatedAt": "2023-03-17T17:37:15Z",
+      "baseRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "baseRefName": "main",
+      "baseRefOid": "dbac7dfad85046c6bcc18efa8ab88c263c63a2f4",
+      "headRepository": "dnssd-wg/draft-ietf-dnssd-update-lease",
+      "headRefName": "20230317-esko-bytes",
+      "headRefOid": "8305c3f9b1964953134511c6b4038a7cda0d107c",
+      "closedAt": "2023-03-17T13:19:30Z",
+      "mergedAt": "2023-03-17T13:19:29Z",
+      "mergedBy": "Abhayakara",
+      "mergeCommit": {
+        "oid": "e0a5d1b80b6f9a1c8c45a2500a347bf5eeaaab3e"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOIBvzCM5QQIjm",
+          "commit": {
+            "abbreviatedOid": "8305c3f"
+          },
+          "author": "abtink",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "LGTM.",
+          "createdAt": "2023-03-17T17:37:14Z",
+          "updatedAt": "2023-03-17T17:37:14Z",
+          "comments": []
+        }
+      ]
+    }
+  ]
+}
