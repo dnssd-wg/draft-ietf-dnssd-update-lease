@@ -1501,7 +1501,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
         </h3>
 <p id="section-5.3-1">Upon receiving a valid Refresh Request, the server MUST send an acknowledgment. This
         acknowledgment is identical to the Update Response format described in <a href="#update" class="auto internal xref">Section 4</a> "Update Message Format", and contains the new lease of the resource
-        records being Refreshed.  The server MUST NOT increment the SOA serial number of a zone
+        records being Refreshed.  The server MUST NOT increment the serial number of a zone
         as the result of a Refresh.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 <p id="section-5.3-2">However, the server's state may not match what the client expects.  In this case, a
  Refresh may actually appear to be a Registration, from the server's perspective. If the
