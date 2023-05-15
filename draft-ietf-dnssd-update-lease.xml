@@ -370,12 +370,13 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       <t><xref target="RFC2136" section="8" sectionFormat="of"/> describes problems that can occur
       around DNS updates.  Servers implementing this specification should follow these recommendations.</t>
 
-      <t>Several additional issues can arise when relying on the Update Lease option. First, a too-long lease time is
-      not much different than no lease time: the records associated with this lease time will effectively
-      never be cleaned up. Servers implementing Update Lease should have a default upper bound on the maximum
-      acceptable value both for the LEASE and KEY-LEASE values sent by the client. Servers MAY provide a way
-      for the operator to change this upper limit. We recommend that the default values for these limits
-      should be 24 hours and 7 days, respectively.</t>
+      <t>Several additional issues can arise when relying on the Update Lease option. First, a
+      too-long lease time is not much different than no lease time: the records associated with
+      this lease time will effectively never be cleaned up. Servers implementing Update Lease
+      should have a default upper bound on the maximum acceptable value both for the LEASE and
+      KEY-LEASE values sent by the client. Servers MAY provide a way for the operator to change
+      this upper limit. Default values for these limits of 24 hours and 7 days, respectively,
+      are RECOMMENDED.</t>
 
       <t>The second issue is that a too-short lease can result in increased server load as
       requestors rapidly renew the lease. A delay in renewing could result in the data being
