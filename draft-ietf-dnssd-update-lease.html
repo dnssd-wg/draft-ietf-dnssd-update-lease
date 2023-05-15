@@ -1361,7 +1361,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
  not intended to be present indefinitely. The Update Lease option SHOULD specify a time
  interval that is no shorter than 30 minutes (1800 seconds). Requestors MAY specify a
  shorter lease if they anticipate that the records being updated will change sooner than
- 30 minutes.  Requestors that expect the updated records to be relatively static MAY
+ 30 minutes.  Requestors that expect the updated records to be relatively static SHOULD
  request appropriately longer leases.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
 <p id="section-4.2-2">If the DNS response received by the requestor does not include an Update Lease option,
  this is an indication that the DNS server does not support the Update Lease option. The

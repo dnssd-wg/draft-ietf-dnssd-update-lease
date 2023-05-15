@@ -205,7 +205,7 @@ Table of Contents
    30 minutes (1800 seconds).  Requestors MAY specify a shorter lease if
    they anticipate that the records being updated will change sooner
    than 30 minutes.  Requestors that expect the updated records to be
-   relatively static MAY request appropriately longer leases.
+   relatively static SHOULD request appropriately longer leases.
 
    If the DNS response received by the requestor does not include an
    Update Lease option, this is an indication that the DNS server does
