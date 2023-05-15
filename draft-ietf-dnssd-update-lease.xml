@@ -332,7 +332,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
         <t>Upon receiving a valid Refresh Request, the server MUST send an acknowledgment. This
         acknowledgment is identical to the Update Response format described in <xref
         target="update"/> "Update Message Format", and contains the new lease of the resource
-        records being Refreshed.  The server MUST NOT increment the SOA serial number of a zone
+        records being Refreshed.  The server MUST NOT increment the serial number of a zone
         as the result of a Refresh.</t>
 
 	<t>However, the server's state may not match what the client expects.  In this case, a
