@@ -1539,12 +1539,13 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       </h2>
 <p id="section-8-1"><span><a href="https://rfc-editor.org/rfc/rfc2136#section-8" class="relref">Section 8</a> of [<a href="#RFC2136" class="cite xref">RFC2136</a>]</span> describes problems that can occur
       around DNS updates.  Servers implementing this specification should follow these recommendations.<a href="#section-8-1" class="pilcrow">¶</a></p>
-<p id="section-8-2">Several additional issues can arise when relying on the Update Lease option. First, a too-long lease time is
-      not much different than no lease time: the records associated with this lease time will effectively
-      never be cleaned up. Servers implementing Update Lease should have a default upper bound on the maximum
-      acceptable value both for the LEASE and KEY-LEASE values sent by the client. Servers MAY provide a way
-      for the operator to change this upper limit. We recommend that the default values for these limits
-      should be 24 hours and 7 days, respectively.<a href="#section-8-2" class="pilcrow">¶</a></p>
+<p id="section-8-2">Several additional issues can arise when relying on the Update Lease option. First, a
+      too-long lease time is not much different than no lease time: the records associated with
+      this lease time will effectively never be cleaned up. Servers implementing Update Lease
+      should have a default upper bound on the maximum acceptable value both for the LEASE and
+      KEY-LEASE values sent by the client. Servers MAY provide a way for the operator to change
+      this upper limit. Default values for these limits of 24 hours and 7 days, respectively,
+      are RECOMMENDED.<a href="#section-8-2" class="pilcrow">¶</a></p>
 <p id="section-8-3">The second issue is that a too-short lease can result in increased server load as
       requestors rapidly renew the lease. A delay in renewing could result in the data being
       removed prematurely.  Servers implementing Update Lease MUST have a default minimum lease
