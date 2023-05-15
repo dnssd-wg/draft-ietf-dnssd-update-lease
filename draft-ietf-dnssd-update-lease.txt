@@ -236,6 +236,17 @@ Table of Contents
    well impose its own constraints on the timing at which a message is
    sent, and this document does not claim to override such constraints.
 
+   Note: the reason for the 3000ms (three second) random interval as
+   opposed to some other random interval is to allow for enough time to
+   meaningfully spread the load when many devices renew at once, without
+   delaying so long that the delay in discovery of devices becomes
+   obvious to an end user.  A 3-second random delay means that if there
+   are for example 100 devices, and the random number generator spread
+   is even, we would have one renewal every 30ms.  In practice, on
+   relatively constrained devices acting as SRP servers, we are seeing
+   the processing time for an SRP registration taking on the order of
+   7ms, so this seems reasonable.
+
 4.3.  Server Behavior
 
    DNS Servers implementing the Update Lease option MUST include an
