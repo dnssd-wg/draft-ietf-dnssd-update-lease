@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
 <rfc category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-latest" ipr="trust200902"
-     xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
+     xmlns:xi="http://www.w3.org/2001/XInclude"
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
   <front>
@@ -308,7 +308,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	  <t>Requestors SHOULD NOT send a Refresh messages when all of the records in the
 	  Refresh have more than 50% of their lease interval remaining before expiry. However,
 	  there may be cases where the requestor needs to send an early Refresh, and it MAY do
-	  so. For example, a power-constrained device may need to send an update when the radio
+	  so. For example, a power-constrained (sleepy) device may need to send an update when the radio
 	  is powered so as to avoid having to power it up later.</t>
 
 	  <t>Another case where this may be needed is if the lease interval registered with the
