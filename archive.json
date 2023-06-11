@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-05-16T01:16:37.516586+00:00",
+  "timestamp": "2023-06-11T01:44:48.668831+00:00",
   "repo": "dnssd-wg/draft-ietf-dnssd-update-lease",
   "labels": [
     {
@@ -487,6 +487,22 @@
       "createdAt": "2023-05-15T14:09:55Z",
       "updatedAt": "2023-05-15T14:49:34Z",
       "closedAt": "2023-05-15T14:49:34Z",
+      "comments": []
+    },
+    {
+      "number": 44,
+      "id": "I_kwDOIBvzCM5oNKxH",
+      "title": "tsv-art review (Brian Trammel)",
+      "url": "https://github.com/dnssd-wg/draft-ietf-dnssd-update-lease/issues/44",
+      "state": "OPEN",
+      "author": "Abhayakara",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 6 refers to RFC 1536 for transmission control when using UDP. It seems\r\nto me that this advice is in line with section 3.1.3 of RFC 8085 (BCP 145),\r\nwhich seems to apply as this should be a low-volume application. But it would\r\nbe nice if this document made that point explicitly.",
+      "createdAt": "2023-06-08T16:24:05Z",
+      "updatedAt": "2023-06-08T16:24:05Z",
+      "closedAt": null,
       "comments": []
     }
   ],
