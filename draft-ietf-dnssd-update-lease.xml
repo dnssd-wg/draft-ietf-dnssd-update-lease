@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
-<rfc category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-07" ipr="trust200902"
+<rfc category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-08" ipr="trust200902"
      xmlns:xi="http://www.w3.org/2001/XInclude" version="3"
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
@@ -38,7 +38,7 @@
       </address>
     </author>
 
-    <date/>
+    <date>2023-07-07</date>
     <area>Internet</area>
     <workgroup>Internet Engineering Task Force</workgroup>
     <keyword>DNS Update</keyword>
@@ -339,7 +339,9 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       <t>The DNS protocol, including DNS updates, can operate over UDP or TCP. When using UDP, reliable
       transmission must be guaranteed by retransmitting if a DNS UDP message is not acknowledged in a
       reasonable interval. <xref target="RFC1035" section="4.2.1" sectionFormat="of"/> provides some
-      guidance on this topic, as does <xref target="RFC1536" section="1" sectionFormat="of"/>.</t>
+      guidance on this topic, as does <xref target="RFC1536" section="1" sectionFormat="of"/>.
+      <xref target="RFC8085" section="3.1.3" sectionFormat="of"/> also provides useful guidance that
+      is particularly relevant to DNS.</t>
     </section>
 
     <section>
@@ -385,12 +387,12 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       client during that interval MUST be silently ignored by the server.</t>
 
       <t>Some authentication strategy should be used when accepting DNS updates. Shared secret
-      <xref target="RFC8945"/> or public key signing should be required. Keys should have limited
+      <xref target="RFC8945"/> or public key signing (e.g. SIG(0) <xref target="RFC2931"/>) should be required. Keys should have limited
       authority: compromise of a key should not result in compromise of the entire contents of one
       or more zones managed by the server. Key management strategy is out of scope for this document.
       An example of a key management strategy can be found in <xref target="I-D.ietf-dnssd-srp"/>,
-      which uses "first come, first-served naming" rather than an explicit trust establishment process
-      to conver update permission to a set of records.</t>
+      which uses "first come, first-served naming" rather than an explicit trust establishment process,
+      to confer update permission to a set of records.</t>
     </section>
 
     <section>
@@ -419,8 +421,10 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       <name>Acknowledgments</name>
       <t>Thanks to Marc Krochmal and Kiren Sekar for their work in 2006 on the precursor to this
       document.  Thanks also to Roger Pantos and Chris Sharp for their contributions. Thanks to
-      Chris Box, Esko Dijk, Jonathan Hui, Peter van Dijk, Abtin Keshvarzian, Nathan Dyck, Steve Hanna,
-      Gabriel Montenegro, Kangping Dong, and Tim Wicinski for their reviews of this document.</t>
+      Chris Box, Esko Dijk, Jonathan Hui, Peter van Dijk, Abtin Keshvarzian, Nathan Dyck, Steve
+      Hanna, Gabriel Montenegro, Kangping Dong, and Tim Wicinski for their working group reviews of this document.
+      Thanks to David Dong, Olafur Gudmundsson, Brian Trammel, and Shivan Sahib for their directorate
+      reviews and IANA reviews.</t>
     </section>
   </middle>
 
@@ -438,7 +442,9 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 
     <references title="Informative References">
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.1536.xml"/>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2931.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml"/>
+      <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8085.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8945.xml"/>
       <xi:include href="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-dnssd-srp.xml"/>
       <reference anchor="EDNS0Codes" target="https://www.iana.org/assignments/dns-parameters/dns-parameters.xml">
