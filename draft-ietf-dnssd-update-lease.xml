@@ -81,17 +81,6 @@
       An extension to Dynamic Update is
       thus required to tell the server to automatically delete resource
       records if they are not refreshed after a period of time.</t>
-
-      <t>Note that overloading the resource record TTL <xref target="RFC1035"/> is not
-      appropriate for purposes of garbage collection. Data that is
-      susceptible to frequent change or invalidation, thus requiring a
-      garbage collection mechanism, needs a relatively short resource
-      record TTL to avoid polluting intermediate DNS caches with stale
-      data. Using this TTL, short enough to minimize stale cached data,
-      as a garbage collection lease lifetime would result in an unacceptable
-      amount of network traffic due to refreshes
-      (see <xref target="refresh"/> "Refresh Messages").</t>
-
     </section>
 
     <section>
@@ -106,7 +95,7 @@
 	<name>Abbreviations</name>
 	<dl>
 	  <dt>DNS-SD</dt><dd>DNS-based service discovery <xref target="RFC6763"/></dd>
-	  <dt>EDNS(0)</dt><dd>Extension Mechanism for DNS, version 0 <xref target="RFC6891"/></dd>
+	  <dt>EDNS(0)</dt><dd>Extension Mechanisms for DNS, version 0 <xref target="RFC6891"/></dd>
 	</dl>
       </section>
     </section>
@@ -123,9 +112,7 @@
       Dynamic DNS Update Leases Requests and Responses are formatted as standard DNS Dynamic
       Update messages <xref target="RFC2136"/>. This update MUST include the EDNS(0) OPT RR, as
       described in <xref target="RFC6891"/>.  This OPT RR MUST include an EDNS(0) Option as shown
-      below.  Note that if a TSIG resource record (<xref target="RFC8945"/>) is included to
-      authenticate the update, the TSIG RR MUST appear <em>after</em> the OPT RR, allowing the
-      message digest in the TSIG to cover the OPT RR.</t>
+      below.</t>
 
       <t>The Update Lease EDNS(0) option is formatted as follows:</t>
 
@@ -163,6 +150,11 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       in the DNS-SD Service Registration Protocol <xref target="I-D.ietf-dnssd-srp"/> to reserve
       a name (or names) when the service is not present.</t>
 
+      <t>In the case of a KEY record and some other record, obviously the KEY LEASE applies to
+      the key, and the LEASE applies to the other record. If more than one record that is not
+      a KEY record is added by the update, the LEASE (not the KEY LEASE) is applied to all such
+      records. Records that are removed are permanently removed.</t>
+
       <section anchor="update-refresh">
 	<name>Types of DNS Update Request messages</name>
 	<t>This document describes two types of updates: Registrations and Refreshes. A
@@ -181,7 +173,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	<name>Requestor Behavior</name>
 	<t>DNS Update requestors MUST send an Update Lease option with any DNS Update that is
 	not intended to be present indefinitely. The Update Lease option SHOULD specify a time
-	interval that is no shorter than 30 minutes (1800 seconds). Requestors MAY specify a
+	interval that is no shorter than 1800 seconds (30 minutes). Requestors MAY specify a
 	shorter lease if they anticipate that the records being updated will change sooner than
 	30 minutes.  Requestors that expect the updated records to be relatively static SHOULD
 	request appropriately longer leases.</t>
@@ -259,7 +251,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 
 	<t>The Refresh message SHOULD NOT include any update prerequisites that would fail if
 	the requestor's previous Registration or Refresh is still in effect. It also SHOULD NOT
-	include prerequisites that would fail if the records affected the previous Registration or
+	include prerequisites that would fail if the records affected by the previous Registration or
 	Refresh are no longer present--that is, the Refresh should also work as a Registration.
 	There may be cases where this is not possible, in which case the response from
 	the server can be used to determine how to proceed when the Refresh fails.</t>
