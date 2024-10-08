@@ -395,7 +395,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       authority: compromise of a key should not result in compromise of the entire contents of one
       or more zones managed by the server. Key management strategy is out of scope for this document.
       An example of a key management strategy can be found in <xref target="I-D.ietf-dnssd-srp"/>,
-      which uses "First Come, First-Served Naming" rather than an explicit trust establishment process,
+      which uses "First Come, First-Served naming" rather than an explicit trust establishment process,
       to confer update permission to a set of RRs.</t>
     </section>
 
