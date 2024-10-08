@@ -106,15 +106,15 @@
 
     <section>
       <name>Mechanisms</name>
-      <t>The Update Lease EDNS(0) option is included in a standard DNS Update message <xref
+      <t>The Update Lease EDNS(0) option is included in a standard DNS Update Request <xref
       target="RFC2136"/> within an EDNS(0) OPT pseudo-RR <xref target="RFC6891"/>.</t>
     </section>
 
     <section anchor="update">
-      <name>Lease Update Message Format</name>
+      <name>Lease Update Request Format</name>
       <t>
       Lease Update Requests and Responses are formatted as standard DNS 
-      Update messages <xref target="RFC2136"/>. Such messages MUST include the EDNS(0) OPT RR, as
+      Update Requests <xref target="RFC2136"/>. Such Requests MUST include the EDNS(0) OPT RR, as
       described in <xref target="RFC6891"/>.  This OPT RR MUST include an EDNS(0) Option as shown
       below.</t>
 
@@ -237,17 +237,17 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
     </section>
 
     <section anchor="refresh">
-      <name>Refresh Messages</name>
+      <name>Refresh Requests</name>
 
       <t>A Refresh Request is a DNS Update Request that is sent to the server after an initial
       DNS Update has been sent, in order to prevent the update's RRs from being garbage
       collected.</t>
 
       <section>
-	<name>Refresh Message Format</name>
+	<name>Refresh Request Format</name>
 
         <t>Refresh Requests are formatted like Lease Update Requests and Responses (see
-        <xref target="update"/> "Lease Update Message Format"). The Refresh Request is
+        <xref target="update"/> "Lease Update Request Format"). The Refresh Request is
         constructed with the assumption that the result of the previous Registration or Refresh is
         still in effect. The Refresh Request will, in the case that the RRs added in a
         previous Lease Update Request were for some reason garbage collected, result in those RRs being
@@ -297,7 +297,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	Request.</t>
 
 	<section>
-	  <name>Coalescing Refresh Messages</name>
+	  <name>Coalescing Refresh Request</name>
           <t>If the Requestor has performed multiple successful Registrations with a single server,
           the Requestor MAY send a Refresh Request containing all RRs from each previously-successful Registration Request to that server.
           This effectively places all RRs for a Requestor on the same expiration
@@ -307,7 +307,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	  including those not yet close to expiration, so long as at least one
 	  RR in the Request has elapsed at least 75% of its original lease interval. If the
 	  Requestor uses UDP, the requestor MUST NOT coalesce Refresh Requests if doing so would
-	  cause truncation of the message; in this case, the Requestor should either send multiple
+	  cause truncation of the Request; in this case, the Requestor should either send multiple
 	  Requests or should use TCP to send the complete Request at once.</t>
 
 	  <t>Requestors SHOULD NOT send a Refresh Request when all of the RRs in the
@@ -327,7 +327,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	<name>Server Behavior</name>
         <t>Upon receiving a valid Refresh Request, the server MUST send an acknowledgment. This
         acknowledgment is identical to the Lease Update Response format described in <xref
-        target="update"/> "Update Message Format", and contains the new lease interval of the resource
+        target="update"/> "Lease Update Request Format", and contains the new lease interval of the resource
         records being Refreshed.  The server MUST NOT increment the serial number of a zone
         as the result of a Refresh.</t>
 
