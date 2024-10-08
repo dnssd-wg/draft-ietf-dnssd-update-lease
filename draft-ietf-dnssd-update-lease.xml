@@ -43,8 +43,8 @@
     <workgroup>Internet Engineering Task Force</workgroup>
     <keyword>DNS Update</keyword>
     <abstract>
-      <t>This document describes an EDNS(0) option that can be used by DNS Update requestors and
-      DNS servers to include a lease lifetime in a DNS Update or response, allowing a server to garbage collect stale
+      <t>This document describes an EDNS(0) option that can be used by DNS Update Requestors and
+      DNS servers to include a lease lifetime in a DNS Update or DNS Update Response, allowing a server to garbage collect stale
       resource records that have been added by DNS Updates</t>
     </abstract>
     <note removeInRFC="true">
@@ -72,13 +72,13 @@
       hostname to a dynamic IP address. This capability is particularly
       beneficial to mobile hosts, whose IP address may frequently change
       with location. However, the mobile nature of such hosts often means
-      that dynamically updated resource records are not properly
+      that dynamically updated Resource Records (RRs) are not properly
       deleted. Consider, for instance, a mobile user who publishes address
-      records via dynamic update. If this user moves
+      RRs via Dynamic DNS Update. If this user moves
       their laptop out of range of the Wi-Fi access point,
-      the address record containing stale information
+      the address RR containing stale information
       may remain on the server indefinitely.
-      An extension to Dynamic Update is
+      An extension to Dynamic DNS Update is
       thus required to tell the server to automatically delete resource
       records if they are not refreshed after a period of time.</t>
     </section>
@@ -96,21 +96,25 @@
 	<dl>
 	  <dt>DNS-SD</dt><dd>DNS-based service discovery <xref target="RFC6763"/></dd>
 	  <dt>EDNS(0)</dt><dd>Extension Mechanisms for DNS, version 0 <xref target="RFC6891"/></dd>
+          <dt>Update Lease option</dt><dd>Update Lease EDNS(0) option</dd>
+          <dt>Lease Update Request</dt><dd>DNS Update Request containing an Update Lease option</dd>
+          <dt>Lease Update Response</dt><dd>DNS Update Response containing an Update Lease option</dd>
+          <dt>RR</dt><dd>Resource Record</dd>
 	</dl>
       </section>
     </section>
 
     <section>
       <name>Mechanisms</name>
-      <t>The EDNS(0) Update Lease option is included in a standard DNS Update message <xref
+      <t>The Update Lease EDNS(0) option is included in a standard DNS Update message <xref
       target="RFC2136"/> within an EDNS(0) OPT pseudo-RR <xref target="RFC6891"/>.</t>
     </section>
 
     <section anchor="update">
-      <name>Update Message Format</name>
+      <name>Lease Update Message Format</name>
       <t>
-      Dynamic DNS Update Leases Requests and Responses are formatted as standard DNS Dynamic
-      Update messages <xref target="RFC2136"/>. This update MUST include the EDNS(0) OPT RR, as
+      Lease Update Requests and Responses are formatted as standard DNS Dynamic
+      Update messages <xref target="RFC2136"/>. Such messages MUST include the EDNS(0) OPT RR, as
       described in <xref target="RFC6891"/>.  This OPT RR MUST include an EDNS(0) Option as shown
       below.</t>
 
@@ -121,74 +125,74 @@ Field Name       Field Type   Description
 ----------------------------------------------------------------
 OPTION-CODE      u_int16_t    UPDATE-LEASE (2)
 OPTION-LENGTH    u_int16_t    4 or 8
-LEASE            u_int32_t    desired lease (request) or
-                              granted lease (response), in seconds
+LEASE            u_int32_t    desired lease interval (Lease Update Request) or
+                              granted lease interval (Lease Update Response), in seconds
 KEY-LEASE        u_int32_t    optional desired (or granted)
-                              lease for KEY records, in seconds
+                              key lease interval for KEY RRs, in seconds
 ]]></artwork></figure>
 
-      <t>Update Requests contain, in the LEASE field of the OPT RDATA, an
-      unsigned 32-bit integer indicating the lease lifetime, in seconds, desired
-      by the requestor, represented in network (big-endian) byte order.
-      In Update Responses, this field contains the actual
+      <t>Lease Update Requests contain, in the LEASE field of the OPT RDATA, an
+      unsigned 32-bit integer indicating the lease interval, or lease, in seconds, desired
+      by the Requestor, represented in network (big-endian) byte order.
+      In Lease Update Responses, this field contains the actual
       lease granted by the server. The lease granted by the
       server may be less than, greater than, or equal to the value
-      requested by the requestor.</t>
+      requested by the Requestor.</t>
 
-      <t>There are two variants of the EDNS(0) UPDATE-LEASE option,
+      <t>There are two variants of the Update Lease option,
       the basic (4-byte) variant and the extended (8-byte) variant.</t>
 
       <t>In the basic (4-byte) variant, the LEASE indicated in the
-      Update Lease option applies to all resource records in the Update section.</t>
+      Update Lease option applies to all RRs in the Update section.</t>
 
       <t>In the extended (8-byte) variant, the Update Lease communicates two lease lifetimes.
-      The LEASE indicated in the Update Lease option applies to all resource records in the
-      Update section *except* for KEY records.  The KEY-LEASE indicated in the Update Lease
-      option applies to KEY records in the Update section.</t>
+      The LEASE indicated in the Update Lease option applies to all RRs in the
+      Update section *except* for KEY RRs.  The key lease interval indicated in the Update Lease
+      option applies to KEY RRs in the Update section.</t>
 
-      <t>The reason the KEY record can be given a special lease time is that this record is used
+      <t>The reason the KEY RR can be given a special lease time is that this RR is used
       in the DNS-SD Service Registration Protocol <xref target="I-D.ietf-dnssd-srp"/> to reserve
       a name (or names) when the service is not present.</t>
 
-      <t>In the case of a KEY record and some other record, obviously the KEY LEASE applies to
-      the key, and the LEASE applies to the other record. If more than one record that is not
-      a KEY record is added by the update, the LEASE (not the KEY LEASE) is applied to all such
-      records. Records that are removed are permanently removed.</t>
+      <t>In the case of a KEY RR and some other RR, obviously the key lease interval applies to
+      the KEY RR, and the LEASE applies to the other RR. If more than one RR that is not
+      a KEY RR is added by the update, the lease interval (not the key lease interval) is applied to all such
+      RRs. RRs that are removed are permanently removed.</t>
 
       <section anchor="update-refresh">
-	<name>Types of DNS Update Request messages</name>
-	<t>This document describes two types of updates: Registrations and Refreshes. A
-	Registration is a DNS Update Request that is intended to add information not already
+	<name>Types of Lease Update Requests</name>
+	<t>This document describes two types of Lease Update Requests: Registrations and Refreshes. A
+	Registration is a Lease Update Request that is intended to add information not already
 	present on the DNS server. A Refresh is intended simply to renew the lease on a previous
-	Registration without changing anything. Both messages are DNS Update messages, so the
-	term "DNS Update message" is to specify behavior that is the same for both types of
-	DNS Update message.</t>
+	Registration without changing anything. Both requests are Lease Update Requests, so the
+	term "Lease Update Request" is to specify behavior that is the same for both types of
+	Lease Update Request.</t>
 
 	<t>In some cases it may be necessary to add new information without removing old information.
-	For the purpose of this document, such messages are referred to as Registrations, although
-	in effect they may also refresh whatever information is unchanged from a previous registration.</t>
+	For the purpose of this document, such Requests are referred to as Registration Requests, although
+	in effect they may also refresh whatever information is unchanged from a previous Registration Request.</t>
       </section>
 
-      <section anchor="requestor">
+      <section anchor="Requestor">
 	<name>Requestor Behavior</name>
-	<t>DNS Update requestors MUST send an Update Lease option with any DNS Update that is
-	not intended to be present indefinitely. The Update Lease option SHOULD specify a time
+	<t>DNS Update Requestors MUST send an Update Lease option with any Lease Update Request that is
+	not intended to be present indefinitely. The Update Lease option SHOULD specify a lease
 	interval that is no shorter than 1800 seconds (30 minutes). Requestors MAY specify a
-	shorter lease if they anticipate that the records being updated will change sooner than
-	30 minutes.  Requestors that expect the updated records to be relatively static SHOULD
-	request appropriately longer leases.</t>
+	shorter lease if they anticipate that the RRs being updated will change sooner than
+	30 minutes.  Requestors that expect the updated RRs to be relatively static SHOULD
+	request appropriately longer lease intervals.</t>
 
-	<t>If the DNS response received by the requestor does not include an Update Lease option,
+	<t>If the DNS Response received by the Requestor does not include an Update Lease option,
 	this is an indication that the DNS server does not support the Update Lease option. The
-	requestor SHOULD in this case continue sending Refresh messages (see below) as if the
-	server had returned an identical update lease option in its response.</t>
+	Requestor SHOULD in this case continue sending Refresh Requests (see below) as if the
+	server had returned an identical Update Lease option in its Response.</t>
 
-	<t>If the DNS response does include an Update Lease option, the requestor MUST use the
-	interval(s) returned in this option when determining when to send Refresh messages. This
+	<t>If the DNS Response does include an Update Lease option, the Requestor MUST use the
+	interval(s) returned in this option when determining when to send Refresh Requests. This
 	is true both if the interval(s) returned by the server are shorter and if they are
 	longer.</t>
 
-	<t>When sending a Registration, the requestor MUST delay the initial transmission by a
+	<t>When sending a Registration, the Requestor MUST delay the initial transmission by a
 	random amount of time across the range of 0-3000 milliseconds, with a granularity of no
 	more than 10 milliseconds. This prevents synchronization of multiple devices of the same
 	type at a site upon recovery from a power failure. This requirement applies only to the
@@ -196,10 +200,10 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	synchronization that occurs after such an event should quickly randomize.</t>
 
 	<t>Note: the requirement for 10ms granularity is a scheduling requirement intended to
-	result in an even spread of requests, so that every request doesn't come an exact number
+	result in an even spread of Lease Update Requests, so that every such request doesn't come an exact number
 	of seconds after startup. This requirement should not be construed as requiring anything
 	of the link layer on which the packet is transmitted: the link layer may well impose its
-	own constraints on the timing at which a message is sent, and this document does not
+	own constraints on the timing at which a Request is sent, and this document does not
 	claim to override such constraints.</t>
 
 	<t>Note: the reason for the 3000ms (three second) random interval as opposed to some
@@ -216,7 +220,7 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	<name>Server Behavior</name>
 	<t>DNS Servers implementing the Update Lease option MUST include an Update Lease option
 	in response to any successful DNS Update (RCODE=0) that includes an Update Lease option.
-	Servers MAY return different lease interval(s) than specified by the requestor, granting
+	Servers MAY return different lease interval(s) than specified by the Requestor, granting
 	relatively longer or shorter leases to reduce network traffic due to Refreshes, or
 	reduce stale data, respectively.</t>
         <t>Note that both the 4-byte and 8-byte variant are valid on both clients and servers, but
@@ -224,10 +228,10 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
 	clients and servers that do support this variant must account for the possibility that
 	the server with which they are communicating does not.</t>
 	<t>A client that receives a 4-byte variant from a server when it sent an 8-byte variant
-	MUST treat the 4-byte variant as specifying both the lease time and the key lease time.
+	MUST treat the 4-byte variant as specifying both the lease interval and the key lease interval.
 	A server that supports the 8-byte variant MUST treat the 4-byte variant as specifying
-	both the lease time and the key lease time. When a server receives a 4-byte variant, it
-	MUST respond with a 4-byte variant. In this case the key and the other records expire at
+	both the lease interval and the key lease interval. When a server receives a 4-byte variant, it
+	MUST respond with a 4-byte variant. In this case the KEY and the other RRs expire at
 	the same time.</t>
       </section>
     </section>
@@ -235,95 +239,95 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
     <section anchor="refresh">
       <name>Refresh Messages</name>
 
-      <t>A Refresh message is a DNS Update message that is sent to the server after an initial
-      DNS Update has been sent, in order to prevent the update's records from being garbage
+      <t>A Refresh Request is a DNS Update Request that is sent to the server after an initial
+      DNS Update has been sent, in order to prevent the update's RRs from being garbage
       collected.</t>
 
       <section>
 	<name>Refresh Message Format</name>
 
-        <t>Refresh messages are formatted like Dynamic Update Leases Requests and Responses (see
-        <xref target="update"/> "Update Message Format"). The Refresh message is
+        <t>Refresh Requests are formatted like Lease Update Requests and Responses (see
+        <xref target="update"/> "Lease Update Message Format"). The Refresh Request is
         constructed with the assumption that the result of the previous Registration or Refresh is
-        still in effect. The Refresh message will, in the case that the records added in a
-        previous update were for some reason garbage collected, result in those records being
+        still in effect. The Refresh Request will, in the case that the RRs added in a
+        previous Lease Update Request were for some reason garbage collected, result in those RRs being
         added again.</t>
 
-	<t>The Refresh message SHOULD NOT include any update prerequisites that would fail if
-	the requestor's previous Registration or Refresh is still in effect. It also SHOULD NOT
-	include prerequisites that would fail if the records affected by the previous Registration or
-	Refresh are no longer present--that is, the Refresh should also work as a Registration.
-	There may be cases where this is not possible, in which case the response from
-	the server can be used to determine how to proceed when the Refresh fails.</t>
+	<t>The Refresh Request SHOULD NOT include any Lease Update Request prerequisites that would fail if
+	the Requestor's previous Registration or Refresh Request is still in effect. It also SHOULD NOT
+	include prerequisites that would fail if the RRs affected by the previous Registration or
+	Refresh Request are no longer present--that is, the Refresh Request should also work as a Registration Request.
+	There may be cases where this is not possible, in which case the DNS Response from
+	the server can be used to determine how to proceed when the Refresh Request fails.</t>
 
-	<t>An update message that changes the server state resulting from a previous Refresh or
+	<t>A Lease Update Request that changes the server state resulting from a previous Refresh or
 	Registration is a Registration, not a Refresh.</t>
 
-	<t>The Update Lease option in a Refresh message contains the desired new lease for
-	Requests, and the actual granted lease for Responses. The LEASE interval indicated in the
-	Update Lease option applies to all resource records in the Update section of the Refresh
-	request, except that if a KEY-LEASE interval is included as well, that interval applies
-	to any KEY records included in the Update section.</t>
+	<t>The Update Lease option in a Refresh Request contains the desired new lease interval for
+	Requests, and the actual granted lease interval for Lease Update Responses. The lease interval indicated in the
+	Update Lease option applies to all RRs in the Update section of the Refresh
+	Request, except that if a key lease interval is included as well, that interval applies
+	to any KEY RRs included in the Update section.</t>
       </section>
 
       <section>
 	<name>Requestor Behavior</name>
 
-	<t>A requestor that intends that its records from a previous update, whether a Registration
-	or a Refresh, remain active, MUST send a Refresh message before the lease elapses, or else the records
+	<t>A Requestor that intends that its RRs from a previous update, whether a Registration
+	or a Refresh, remain active, MUST send a Refresh Request before the lease interval elapses, or else the RRs
 	will be removed by the server.</t>
 
-	<t>In order to prevent records expiring, requestors MUST refresh resource records before they
+	<t>In order to prevent RRs expiring, Requestors MUST refresh RRs before they
 	expire. At the time of registration, the client computes an interval that is 80% of the lease
-	time plus a random offset between 0 and 5% of the lease time. The random offset is to prevent
-	refreshes from being synchronized. When this interval has expired, the client MUST refresh the
-	message if the data in the initial Registration should continue to be advertised.</t>
+	interval plus a random offset between 0 and 5% of the lease interval. The random offset is to prevent
+	refreshes from being synchronized. When this interval has expired, the client MUST send a Refresh
+	if the data in the initial Registration should continue to be advertised.</t>
 
-	<t>For Refresh messages, the server is expected to return an Update Lease option, if
+	<t>For Refresh Requests, the server is expected to return an Update Lease option, if
 	supported, just as with the initial Registration. As with the Registration, the
-	requestor MUST use the interval(s) specified by the server when determining when to send
-	the next Refresh message.</t>
+	Requestor MUST use the interval(s) specified by the server when determining when to send
+	the next Refresh Request.</t>
 
-	<t>When sending Refresh messages, the requestor MUST include an Update Lease option, as
+	<t>When sending Refresh Requests, the Requestor MUST include an Update Lease option, as
 	it did for the initial Registration. The Update Lease option MAY either specify the same
 	intervals as in the initial Registration, or MAY use the values returned by the server
-	in the previous Update Response, whether it was a response to a Registration a
-	Refresh. As with responses to Registrations, the requestor MUST use the intervals
-	returned by the server in the response when determining when to send the next Refresh
-	message.</t>
+	in the previous Lease Update Response, whether it was in response to a Registration a
+	Refresh. As with Responses to Registrations, the Requestor MUST use the intervals
+	returned by the server in the Response when determining when to send the next Refresh
+	Request.</t>
 
 	<section>
 	  <name>Coalescing Refresh Messages</name>
-          <t>If the requestor has performed multiple successful Registrations with a single server,
-          the requestor MAY include Refreshes for all such Registrations to that server in a single
-          message. This effectively places all records for a requestor on the same expiration
+          <t>If the Requestor has performed multiple successful Registrations with a single server,
+          the Requestor MAY send a Refresh Request containing all RRs from each previously-successful Registration Request to that server.
+          This effectively places all RRs for a Requestor on the same expiration
           schedule, reducing network traffic due to Refreshes.</t>
 
-	  <t>In doing so, the requestor includes in the Refresh message all existing updates to
-	  the server, including those not yet close to expiration, so long as at least one
-	  resource record in the message has elapsed at least 75% of its original lease. If the
-	  requestor uses UDP, the requestor MUST NOT coalesce Refresh messages if doing so would
-	  cause truncation of the message; in this case, the requestor should either send multiple
-	  messages or should use TCP to send the entire update at once.</t>
+	  <t>In doing so, the Requestor includes in the Refresh Request all existing RRs previously successfully registered on the server,
+	  including those not yet close to expiration, so long as at least one
+	  RR in the Request has elapsed at least 75% of its original lease interval. If the
+	  Requestor uses UDP, the requestor MUST NOT coalesce Refresh Requests if doing so would
+	  cause truncation of the message; in this case, the Requestor should either send multiple
+	  Requests or should use TCP to send the complete Request at once.</t>
 
-	  <t>Requestors SHOULD NOT send a Refresh messages when all of the records in the
-	  Refresh have more than 50% of their lease interval remaining before expiry. However,
-	  there may be cases where the requestor needs to send an early Refresh, and it MAY do
-	  so. For example, a power-constrained (sleepy) device may need to send an update when the radio
+	  <t>Requestors SHOULD NOT send a Refresh Request when all of the RRs in the
+	  Refresh Request have more than 50% of their lease interval remaining before expiry. However,
+	  there may be cases where the Requestor needs to send an early Refresh, and it MAY do
+	  so. For example, a power-constrained (sleepy) device may need to send an Refresh Request when the radio
 	  is powered so as to avoid having to power it up later.</t>
 
 	  <t>Another case where this may be needed is if the lease interval registered with the
 	  server is no longer appropriate and the Requestor wishes to negotiate a different
 	  lease interval. However, in this case, if the server does not honor the requested
-	  interval in its response, the requestor MUST NOT retry this negotiation.</t>
+	  interval in its Response, the Requestor MUST NOT retry this negotiation.</t>
 	</section>
       </section>
 
       <section>
 	<name>Server Behavior</name>
         <t>Upon receiving a valid Refresh Request, the server MUST send an acknowledgment. This
-        acknowledgment is identical to the Update Response format described in <xref
-        target="update"/> "Update Message Format", and contains the new lease of the resource
+        acknowledgment is identical to the Lease Update Response format described in <xref
+        target="update"/> "Update Message Format", and contains the new lease interval of the resource
         records being Refreshed.  The server MUST NOT increment the serial number of a zone
         as the result of a Refresh.</t>
 
@@ -347,13 +351,13 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
     <section>
       <name>Garbage Collection</name>
 
-      <t>If the Update Lease of a resource record elapses without being refreshed, the server
-      MUST NOT return the expired record in answers to queries. The server MAY delete the record
-      from its database. The lease interval(s) returned by the server to the requestor are used
-      in determining when the lease on a resource record has expired.</t>
+      <t>If the lease interval of a RR elapses without being refreshed, the server
+      MUST NOT return the expired RR in answers to queries. The server MAY delete the RR
+      from its database. The lease interval(s) returned by the server to the Requestor are used
+      in determining when the lease on a RR has expired.</t>
 
-      <t>For all resource records other than a KEY record included in a DNS Update request, the
-      Update Lease is the LEASE value in the Update Lease option. For KEY records, if the
+      <t>For all RRs other than a KEY RR included in a DNS Update request, the
+      lease interval is the LEASE value in the Update Lease option. For KEY RRs, if the
       optional KEY-LEASE value was included, this interval is used rather than the interval
       specified in LEASE. If KEY-LEASE was not specified, the interval specified in LEASE is
       used.
@@ -365,23 +369,23 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       around DNS updates.  Servers implementing this specification should follow these recommendations.</t>
 
       <t>Several additional issues can arise when relying on the Update Lease option. First, a
-      too-long lease time is not much different than no lease time: the records associated with
-      this lease time will effectively never be cleaned up. Servers implementing Update Lease
+      too-long lease interval is not much different than no lease: the RRs associated with
+      this lease interval will effectively never be cleaned up. Servers implementing Update Lease
       should have a default upper bound on the maximum acceptable value both for the LEASE and
       KEY-LEASE values sent by the client. Servers MAY provide a way for the operator to change
       this upper limit. Default values for these limits of 24 hours and 7 days, respectively,
       are RECOMMENDED.</t>
 
-      <t>The second issue is that a too-short lease can result in increased server load as
-      requestors rapidly renew the lease. A delay in renewing could result in the data being
+      <t>The second issue is that a too-short lease interval can result in increased server load as
+      Requestors rapidly renew their leases. A delay in renewing could result in the data being
       removed prematurely.  Servers implementing Update Lease MUST have a default minimum lease
-      interval that avoids this issue. We RECOMMEND a minimum of 30 seconds for both the LEASE
-      and KEY-LEASE intervals. However, in most cases, much longer lease times (for example, an hour)
+      interval that avoids this issue. We RECOMMEND a minimum of 30 seconds for both the lease
+      and key lease intervals. However, in most cases, much longer lease intervals (for example, an hour)
       are RECOMMENDED.</t>
 
       <t>There may be some cost associated with renewing leases. A malicious (or buggy) client
       could renew at a high rate in order to overload the server more than it would be
-      overloaded by query traffic. This risk is present for regular DNS update as well. The
+      overloaded by query traffic. This risk is present for regular DNS updates as well. The
       server MUST enforce a minimum interval between updates. After a Refresh or Registration
       has been successfully processed and acknowledged, another Update of either type from the
       client during that interval MUST be silently ignored by the server.</t>
@@ -391,8 +395,8 @@ KEY-LEASE        u_int32_t    optional desired (or granted)
       authority: compromise of a key should not result in compromise of the entire contents of one
       or more zones managed by the server. Key management strategy is out of scope for this document.
       An example of a key management strategy can be found in <xref target="I-D.ietf-dnssd-srp"/>,
-      which uses "first come, first-served naming" rather than an explicit trust establishment process,
-      to confer update permission to a set of records.</t>
+      which uses "First Come, First-Served Naming" rather than an explicit trust establishment process,
+      to confer update permission to a set of RRs.</t>
     </section>
 
     <section>
