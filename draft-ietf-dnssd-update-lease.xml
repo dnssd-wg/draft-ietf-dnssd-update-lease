@@ -5,7 +5,7 @@
      scripts="Common,Latin" sortRefs="false" consensus="true"
      symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
   <front>
-    <title abbrev='Dynamic DNS Update Leases'>
+    <title abbrev='DNS Update Leases'>
       An EDNS(0) option to negotiate Leases on DNS Updates
     </title>
 
@@ -68,17 +68,17 @@
 
     <section>
       <name>Introduction</name>
-      <t>Dynamic DNS Update <xref target="RFC2136"/> allows for a mapping from a persistent
+      <t>Dynamic Updates in the Domain Name System <xref target="RFC2136"/> allows for a mapping from a persistent
       hostname to a dynamic IP address. This capability is particularly
       beneficial to mobile hosts, whose IP address may frequently change
       with location. However, the mobile nature of such hosts often means
       that dynamically updated Resource Records (RRs) are not properly
       deleted. Consider, for instance, a mobile user who publishes address
-      RRs via Dynamic DNS Update. If this user moves
+      RRs via DNS Update. If this user moves
       their laptop out of range of the Wi-Fi access point,
       the address RR containing stale information
       may remain on the server indefinitely.
-      An extension to Dynamic DNS Update is
+      An extension to DNS Update is
       thus required to tell the server to automatically delete resource
       records if they are not refreshed after a period of time.</t>
     </section>
@@ -113,7 +113,7 @@
     <section anchor="update">
       <name>Lease Update Message Format</name>
       <t>
-      Lease Update Requests and Responses are formatted as standard DNS Dynamic
+      Lease Update Requests and Responses are formatted as standard DNS 
       Update messages <xref target="RFC2136"/>. Such messages MUST include the EDNS(0) OPT RR, as
       described in <xref target="RFC6891"/>.  This OPT RR MUST include an EDNS(0) Option as shown
       below.</t>
