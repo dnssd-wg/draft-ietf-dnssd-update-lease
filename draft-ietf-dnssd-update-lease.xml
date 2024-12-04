@@ -120,7 +120,7 @@
 a) We were unsure if some singular/plural changes should be made with
 regard to "Leases".  See suggested text below.
 
-[Ted] This was really bad previously--I think we must have done a search and replace and not checked the results. I've changed "Update Leases Requests and Responses" to "Lease Update Requests and Responses." I think this is clearer.
+[Ted] This was really bad previously. I think we must have done a search and replace and not checked the results. I've changed "Update Leases Requests and Responses" to "Lease Update Requests and Responses." I think this is clearer.
 
 b) Should the use of "DNS" be made uniform?  That is, "Dynamic DNS
 Update Leases Requests and Responses" or "Dynamic Update Leases
@@ -326,7 +326,7 @@ Perhaps:
 
 [Ted] This document can't specify the behavior of DNS servers generally, because it doesn't update the base DNS specifications.
 This is why we used the term "DNS Servers implementing the Update Lease option." We mostly just say "DNS servers" later in the
-document, but I think it's good to make it clear at least once that we are not talking about all DNS servers--that would be
+document, but I think it's good to make it clear at least once that we are not talking about all DNS servers. That would be
 a /very/ broad scope compared to the set of DNS servers to which we think this document is likely to be applicable.
 -->
 
