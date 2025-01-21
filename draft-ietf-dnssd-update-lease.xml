@@ -47,10 +47,10 @@
     <workgroup>dnssd</workgroup>
     <keyword>DNS Update</keyword>
     <abstract>
-      <t>This document describes an EDNS(0) option that can be used by DNS
+      <t>This document describes an EDNS(0) option that can be used between DNS
       Update Requesters and authoritative DNS servers to include a lifetime (lease duration) in a DNS
       Update or DNS Update Response, allowing a server to garbage collect stale Resource Records
-      that have been added by DNS Updates.</t>
+      that have been added by DNS Updates if they are not renewed.</t>
     </abstract>
   </front>
 
@@ -58,7 +58,7 @@
 
     <section>
       <name>Introduction</name>
-      <t>Dynamic Update in the Domain Name System<xref target="RFC2136"/> (DNS Update) allows for a mapping from a persistent
+      <t>Dynamic Update in the Domain Name System (DNS Update) <xref target="RFC2136"/> allows for a mapping from a persistent
       hostname to an IP address that changes over time. This capability is particularly
       beneficial to mobile hosts, whose IP addresses may frequently change
       with location. However, the mobile nature of such hosts often means
@@ -67,10 +67,10 @@
       RRs via DNS Update. If this user moves
       their laptop out of range of the Wi-Fi access point,
       the address RR containing stale information
-      may remain on the server indefinitely.
+      may remain on the authoritative DNS server indefinitely.
       Thus, an extension to DNS Update is
       required to tell the server to automatically delete RRs
-      if they are not refreshed after a period of time.</t>
+      after a period of time if they are not refreshed.</t>
     </section>
 
     <section>
@@ -90,7 +90,7 @@
 	  <dt>DNS-SD:</dt><dd>DNS-based Service Discovery <xref target="RFC6763"/></dd>
 	  <dt>EDNS(0):</dt><dd>Extension Mechanisms for DNS <xref target="RFC6891"/></dd>
           <dt>Update Lease option</dt><dd>Update Lease EDNS(0) option</dd>
-	  <dt>Lease</dt><dd>An agreement by a DNS server to continue to publish a record from the time of registration
+	  <dt>Lease</dt><dd>An agreement by an authoritative DNS server to continue to publish a record from the time of registration
 	  until the lease duration has elapsed, and then stop publishing it.</dd>
 	  <dt>Lease Duration</dt><dd>The time between the start and end of a lease.</dd>
           <dt>Lease Update Request</dt><dd>DNS Update Request containing an Update Lease option</dd>
@@ -98,7 +98,7 @@
           <dt>RR</dt><dd>Resource Record</dd>
 
 	  <dt>Registration Request</dt><dd>A Lease Update Request that is constructed with the purpose of adding new
-	  information that is not thought to already be present on the DNS server.</dd>
+	  information that is not thought to already be present on the authoritative DNS server.</dd>
 	  <dt>Registration</dt><dd>The result of a successful Registration Request.</dd>
 	  <dt>Refresh Request</dt><dd>A Lease Update Request that extends the lease duration on an existing Registration.</dd>
 	  <dt>Refresh</dt><dd>The result of a successful Refresh Request.</dd>
@@ -189,7 +189,7 @@ Perhaps ("Leases" becomes "Lease"):
     <tr>
       <td>OPTION-LENGTH</td>
       <td>u_int16_t</td>
-      <td>4 or 8</td>
+      <td>4 (LEASE) or 8 (LEASE + KEY-LEASE)</td>
     </tr>
     <tr>
       <td>LEASE</td>
@@ -208,7 +208,7 @@ Perhaps ("Leases" becomes "Lease"):
       unsigned 32-bit integer indicating the lease duration in seconds, desired
       by the Requester, represented in network (big-endian) byte order.
       In Lease Update Responses, this field contains the actual
-      lease duration granted by the server. The lease durations granted by the
+      lease duration granted by the authoritative DNS server. The lease durations granted by the
       server may be less than, greater than, or equal to the value
       requested by the Requester.</t>
 
@@ -222,6 +222,9 @@ Perhaps ("Leases" becomes "Lease"):
       The LEASE indicated in the Update Lease option applies to all RRs in the
       Update section <em>except</em> for KEY RRs.  The KEY-LEASE indicated in the Update Lease
       option applies to KEY RRs in the Update section.</t>
+
+      <t>More information about how the two variants are used is given in
+      <xref target="server-behavior" format="default"/>.</t>
 
       <t>
 	KEY RRs are given a special lease duration because these RRs are used
@@ -238,7 +241,7 @@ Perhaps ("Leases" becomes "Lease"):
 	<name>Types of Lease Update Requests</name>
 	<t>This document describes two types of Lease Update Requests: Registrations and
 	Refreshes. A Registration Request is a Lease Update Request that is intended to
-	add information not already present on the DNS server. A Refresh Request is
+	add information not already present on the authoritative DNS server. A Refresh Request is
 	intended simply to renew the lease on a previous Registration without
 	changing anything. Registrations and Refreshes are both Lease Update Requests, so the term
 	"Lease Update Request" is to specify behavior that is the same for both
@@ -264,7 +267,7 @@ Perhaps ("Leases" becomes "Lease"):
 	lease durations.</t>
 
 	<t>If the DNS Response received by the Requester does not include an
-	Update Lease option, this is an indication that the DNS server does
+	Update Lease option, this is an indication that the authoritative DNS server does
 	not support the Update Lease option. In this case, the Requester
 	<bcp14>SHOULD</bcp14> continue sending Refresh Requests (see below) as
 	if the server had returned an identical Update Lease option in its
@@ -307,7 +310,7 @@ Perhaps ("Leases" becomes "Lease"):
 
       </section>
 
-      <section>
+      <section anchor="server-behavior">
 	<name>Server Behavior</name>
 
 
@@ -330,27 +333,34 @@ document, but I think it's good to make it clear at least once that we are not t
 a /very/ broad scope compared to the set of DNS servers to which we think this document is likely to be applicable.
 -->
 
-	<t>DNS servers implementing the Update Lease option
+	<t>Authoritative DNS servers implementing the Update Lease option
 	<bcp14>MUST</bcp14> include an Update Lease option in response to any
 	successful DNS Update (RCODE=0) that includes an Update Lease option.
-	Servers <bcp14>MAY</bcp14> return a different lease durations than
-	specified by the Requester, granting relatively longer or shorter
-	leases to reduce network traffic due to Refreshes or to reduce stale
-	data, respectively.</t>
+	Servers <bcp14>MAY</bcp14> return lease durations different from those
+	specified by the Requester,
+	granting longer leases to reduce network traffic due to Refreshes,
+	or shorter leases to reduce the lifetime of stale data.</t>
 
         <t>Although both the 4-byte and 8-byte variant are valid on
-        both clients and servers, but clients and servers may exist that do
-        not support the newer 8-byte variant. Therefore, clients and servers
-        that do support this variant must account for the possibility that the
-        server with which they are communicating does not.</t>
-	<t>A client that receives a 4-byte variant from a server when it sent
-	an 8-byte variant <bcp14>MUST</bcp14> treat the 4-byte variant as
-	specifying both the lease duration and the KEY lease duration.  A server that
-	supports the 8-byte variant <bcp14>MUST</bcp14> treat the 4-byte
-	variant as specifying both the lease duration and the KEY lease duration. When
-	a server receives a 4-byte variant, it <bcp14>MUST</bcp14> respond
-	with a 4-byte variant. In this case, the key and the other RRs
-	expire at the same time.</t>
+        both requesters and servers, older (pre-standard) requesters and servers may exist
+        that support only the 4-byte variant. Therefore, requesters and servers
+        that (as required by this specification) support both variants
+        must account for the possibility that the peer with which they are communicating
+        may be an older implementation that supports only the 4-byte variant.</t>
+
+	<t>A server that receives an 8-byte variant from a requester
+	<bcp14>MUST</bcp14> respond with an 8-byte variant giving the granted lease times.</t>
+
+	<t>A server that receives a 4-byte variant from a requester
+	<bcp14>MUST</bcp14> treat the 4-byte variant as
+	specifying both the lease duration and the KEY lease duration
+	and <bcp14>MUST</bcp14> respond with a 4-byte variant.
+	In this case, the key and the other RRs expire at the same time.</t>
+
+	<t>A requester that receives a 4-byte variant from a server when it sent
+	an 8-byte variant in its request <bcp14>MUST</bcp14> treat the 4-byte variant as
+	specifying both the lease duration and the KEY lease duration.</t>
+
       </section>
     </section>
 
@@ -369,10 +379,11 @@ a /very/ broad scope compared to the set of DNS servers to which we think this d
         with the assumption that the previous Registration or
         Refresh is still in effect. In the case that
         the RRs added in a previous update were for some reason garbage
-        collected, the Refresh Request will result in those RRs being added again.</t>
+        collected (e.g., because of a server reboot that resulted in loss of state),
+        the Refresh Request will result in those RRs being added again.</t>
 
 	<t>The Refresh Request <bcp14>SHOULD NOT</bcp14> include any DNS Update
-	prerequisites that would fail if the Requester's previous Registration
+	prerequisites that will fail if the Requester's previous Registration
 	or Refresh is still in effect. It also <bcp14>SHOULD NOT</bcp14>
 	include prerequisites that would fail if the RRs affected by the
 	previous Registration or Refresh are no longer present; that is, the
@@ -380,7 +391,7 @@ a /very/ broad scope compared to the set of DNS servers to which we think this d
 	this is not possible; in which case, the response from the server can
 	be used to determine how to proceed when the Refresh Request fails.</t>
 
-	<t>A Lease Update Request that changes the server state resulting from a previous Refresh or
+	<t>A Lease Update Request that changes the authoritative DNS server state resulting from a previous Refresh or
 	Registration is a Registration Request, not a Refresh Request.</t>
 
 	<t>The Update Lease option in a Refresh Request contains the desired new lease duration for
@@ -412,10 +423,10 @@ Perhaps:
 
 	<t>In order to prevent Registrations expiring, Requesters
 	<bcp14>MUST</bcp14> refresh them. When
-	a Lease Update Request succeeds, the client computes a time limit that is 80%
+	a Lease Update Request succeeds, the requester computes a time limit that is 80%
 	of the lease duration plus a random offset between 0% and 5% of the lease
 	duration. The random offset is to prevent refreshes from being
-	synchronized. When this time limit has expired, the client
+	synchronized. When this time limit has expired, the requester
 	<bcp14>MUST</bcp14> send a Refresh Request if the data in the initial
 	Registration should continue to be advertised.</t>
 
@@ -468,9 +479,9 @@ Perhaps:
         acknowledgment is a Lease Update Response as described in <xref
         target="update"/> and contains the new lease duration of the Registration
         being Refreshed.  The server <bcp14>MUST NOT</bcp14> increment the serial number of a zone
-        as the result of a Refresh Request.</t>
+        as the result of a Refresh Request if the operation does not result in any change to the zone contents.</t>
 
-	<t>However, the server's state may not match what the client expects.  In this case, a
+	<t>However, the server's state may not match what the requester expects.  In this case, a
 	Refresh Request may actually appear to be a Registration Request, from the server's perspective. If the
 	Refresh Request changes the contents of the zone, the server <bcp14>MUST</bcp14> update the zone serial
 	number.</t>
@@ -490,7 +501,7 @@ Perhaps:
     <section>
       <name>Garbage Collection</name>
 
-      <t>If the lease duration of an RR elapses without being refreshed, the server
+      <t>If the lease duration of an RR elapses without being refreshed, the authoritative DNS server
       <bcp14>MUST NOT</bcp14> return that RR in answers to queries. The server <bcp14>MAY</bcp14> delete that RR
       from its database. The lease durations returned by the server to the Requester are used
       in determining when the lease on an RR has expired.</t>
@@ -508,13 +519,16 @@ Perhaps:
       <t><xref target="RFC2136" section="8" sectionFormat="of"/> describes problems that can occur
       around DNS updates.  Servers implementing this specification should follow these recommendations.</t>
 
-      <t>Several additional issues can arise when relying on the Update Lease option. First, a
-      too-long lease duration is not much different than no lease duration: the RRs associated with
+      <t>Several additional issues can arise when relying on the Update Lease option.</t>
+
+       <t>First, a
+      too-long lease duration is not much different from no lease duration: the RRs associated with
       such a Registration will effectively never be cleaned up. Servers implementing Update Lease
       should have a default upper bound on the maximum acceptable value both for the LEASE and
-      KEY-LEASE values sent by the client. Servers <bcp14>MAY</bcp14> provide a way for the operator to change
-      this upper limit. Default values for these limits of 24 hours and 7 days, respectively,
-      are <bcp14>RECOMMENDED</bcp14>.</t>
+      KEY-LEASE values sent by the requester.
+      Default values for these limits of 24 hours and 7 days, respectively,
+      are <bcp14>RECOMMENDED</bcp14>.
+      Servers <bcp14>MAY</bcp14> provide a way for the operator to change this upper limit.</t>
 
       <t>The second issue is that a too-short lease can result in increased server load as
       Requesters rapidly renew such Registrations. A delay in renewing could result in the registered RRs being
@@ -539,17 +553,18 @@ documents or something. :)
 -->
 
       A minimum of 30 seconds for both the LEASE
-      and KEY-LEASE durations is RECOMMENDED. However, in most cases, much longer lease durations (for example, an hour)
-      <bcp14>SHOULD</bcp14> be used.</t>
+      and KEY-LEASE durations is <bcp14>RECOMMENDED</bcp14>.
+      However, in most cases, much longer lease durations (for example, an hour)
+      <bcp14>SHOULD</bcp14> be used.
+      Servers <bcp14>MAY</bcp14> provide a way for the operator to change this lower limit.</t>
 
       <t>There may be some cost associated with renewing leases. A malicious
-      (or buggy) client could renew at a high rate in order to overload the
+      (or buggy) requester could renew at a high rate in order to overload the
       server more than it would be overloaded by query traffic. This risk is
-      present for a regular DNS Update as well. The server <bcp14>MUST</bcp14>
-      enforce a minimum interval between updates. After a Refresh or
-      Registration Request has been successfully processed and acknowledged, another
-      Lease Update Request of either type from the client during that interval
-      <bcp14>MUST</bcp14> be silently ignored by the server.</t>
+      present for an authoritative server handling normal (no-lease) DNS Updates as well.
+      Servers SHOULD follow established
+      industry best practices to guard against flooding attacks
+      <xref target="SYN" format="default"/> <xref target="RFC4953" format="default"/>.</t>
 
       <t>Some authentication strategy should be used when accepting DNS
       updates.  Shared secret <xref target="RFC8945"/> or public key signing
@@ -597,6 +612,7 @@ documents or something. :)
       <name>Informative References</name>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.1536.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.2931.xml"/>
+      <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4953.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.6763.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8085.xml"/>
       <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8945.xml"/>
@@ -625,6 +641,27 @@ documents or something. :)
           </author>
         </front>
       </reference>
+
+        <reference anchor="SYN"
+		   target="https://www.cisco.com/web/about/ac123/ac147/archived_issues/ipj_9-4/ipj_9-4.pdf">
+          <front>
+            <title>Defenses Against TCP SYN Flooding Attacks</title>
+
+            <author initials="W." surname="Eddy" fullname="Wesley Eddy">
+              <organization>Verizon Federal Network Systems</organization>
+              <address>
+                <email>weddy@grc.nasa.gov</email>
+              </address>
+            </author>
+            <date year="2006" month="December"/>
+            <keyword>TCP</keyword>
+          </front>
+	    <refcontent>The Internet Protocol Journal</refcontent>
+	      <refcontent>Cisco Systems</refcontent>
+	        <refcontent>Volume 9</refcontent>
+		  <refcontent>Number 4</refcontent>
+        </reference>
+
       </references>
     </references>
 
