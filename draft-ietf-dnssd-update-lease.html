@@ -9,7 +9,7 @@
 <meta content="Ted Lemon" name="author">
 <meta content="
        This document describes an EDNS(0) option that can be used by DNS
-      Update Requestors and authoritative DNS servers to include a lifetime (lease duration) in a DNS
+      Update Requesters and authoritative DNS servers to include a lifetime (lease duration) in a DNS
       Update or DNS Update Response, allowing a server to garbage collect stale Resource Records
       that have been added by DNS Updates. 
     " name="description">
@@ -18,15 +18,15 @@
 <meta content="9664" name="rfc.number">
 <!-- Generator version information:
   xml2rfc 3.25.0
-    Python 3.12.7
+    Python 3.12.8
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
-    Jinja2 3.1.4
+    Jinja2 3.1.5
     lxml 5.3.0
     platformdirs 4.3.6
-    pycountry 22.3.5
-    PyYAML 6.0.1
+    pycountry 24.6.1
+    PyYAML 6.0.2
     requests 2.32.3
     setuptools 70.3.0
     wcwidth 0.2.13
@@ -538,7 +538,11 @@ figcaption, caption {
   }
   pre, svg {
     display: inline-block;
-    overflow-x: auto;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
   }
   pre {
     max-width: 100%;
@@ -1038,7 +1042,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 }
 </style>
 
-<link href="https://datatracker.ietf.org/doc/draft-ietf-dnssd-update-lease-08" rel="prev">
+<link href="https://datatracker.ietf.org/doc/draft-ietf-dnssd-update-lease-latest" rel="prev">
   <link href="https://dx.doi.org/10.17487/rfc9664" rel="alternate">
   <link href="urn:issn:2070-1721" rel="alternate">
   </head>
@@ -1088,7 +1092,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">This document describes an EDNS(0) option that can be used by DNS
-      Update Requestors and authoritative DNS servers to include a lifetime (lease duration) in a DNS
+      Update Requesters and authoritative DNS servers to include a lifetime (lease duration) in a DNS
       Update or DNS Update Response, allowing a server to garbage collect stale Resource Records
       that have been added by DNS Updates.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
@@ -1159,7 +1163,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-types-of-lease-update-reque" class="internal xref">Types of Lease Update Requests</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-requestor-behavior" class="internal xref">Requestor Behavior</a></p>
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-requester-behavior" class="internal xref">Requester Behavior</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
                 <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-server-behavior" class="internal xref">Server Behavior</a></p>
@@ -1173,7 +1177,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-refresh-request-format" class="internal xref">Refresh Request Format</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
-                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-requestor-behavior-2" class="internal xref">Requestor Behavior</a></p>
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-requester-behavior-2" class="internal xref">Requester Behavior</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.1">
                     <p id="section-toc.1-1.5.2.2.2.1.1"><a href="#section-5.2.1" class="auto internal xref">5.2.1</a>.  <a href="#name-coalescing-refresh-requests" class="internal xref">Coalescing Refresh Requests</a></p>
@@ -1356,11 +1360,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </div>
 <p id="section-4-4">Lease Update Requests contain, in the LEASE field of the OPT RDATA, an
       unsigned 32-bit integer indicating the lease duration in seconds, desired
-      by the Requestor, represented in network (big-endian) byte order.
+      by the Requester, represented in network (big-endian) byte order.
       In Lease Update Responses, this field contains the actual
       lease duration granted by the server. The lease durations granted by the
       server may be less than, greater than, or equal to the value
-      requested by the Requestor.<a href="#section-4-4" class="pilcrow">¶</a></p>
+      requested by the Requester.<a href="#section-4-4" class="pilcrow">¶</a></p>
 <p id="section-4-5">There are two variants of the Update Lease option:
       the 4-byte variant and the 8-byte variant.<a href="#section-4-5" class="pilcrow">¶</a></p>
 <p id="section-4-6">In the 4-byte variant, the LEASE indicated in the
@@ -1396,32 +1400,32 @@ svg :is([fill="white"], [fill^="#fff"]) {
  registration.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="requestor">
+<div id="requester">
 <section id="section-4.2">
-        <h3 id="name-requestor-behavior">
-<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-requestor-behavior" class="section-name selfRef">Requestor Behavior</a>
+        <h3 id="name-requester-behavior">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-requester-behavior" class="section-name selfRef">Requester Behavior</a>
         </h3>
-<p id="section-4.2-1">DNS Update Requestors <span class="bcp14">MUST</span> send an Update Lease
+<p id="section-4.2-1">DNS Update Requesters <span class="bcp14">MUST</span> send an Update Lease
  option with any DNS Update that updates RRs that are not intended to be present
  indefinitely. The Update Lease option <span class="bcp14">SHOULD</span> specify a
  lease duration that is no shorter than 1800 seconds (30
- minutes). Requestors <span class="bcp14">MAY</span> specify a shorter lease duration if
+ minutes). Requesters <span class="bcp14">MAY</span> specify a shorter lease duration if
  they anticipate that the RRs being updated will change more frequently than
- every 30 minutes.  Requestors that expect the updated RRs to be
+ every 30 minutes.  Requesters that expect the updated RRs to be
  relatively static <span class="bcp14">SHOULD</span> request appropriately longer
  lease durations.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.2-2">If the DNS Response received by the Requestor does not include an
+<p id="section-4.2-2">If the DNS Response received by the Requester does not include an
  Update Lease option, this is an indication that the DNS server does
- not support the Update Lease option. In this case, the Requestor
+ not support the Update Lease option. In this case, the Requester
  <span class="bcp14">SHOULD</span> continue sending Refresh Requests (see below) as
  if the server had returned an identical Update Lease option in its
  Response.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
 <p id="section-4.2-3">If the DNS Response does include an Update Lease option, the
- Requestor <span class="bcp14">MUST</span> use the durations returned in this
+ Requester <span class="bcp14">MUST</span> use the durations returned in this
  option when determining when to send Refresh Requests. This is true
  both if the durations returned by the server are shorter and if they
  are longer.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
-<p id="section-4.2-4">When sending a Registration Request, the Requestor <span class="bcp14">MUST</span>
+<p id="section-4.2-4">When sending a Registration Request, the Requester <span class="bcp14">MUST</span>
  delay the initial transmission by a random amount of time across the
  range of 0-3000 milliseconds, with a granularity of no more than 10
  milliseconds. This prevents synchronization of multiple devices of the
@@ -1457,7 +1461,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
  <span class="bcp14">MUST</span> include an Update Lease option in response to any
  successful DNS Update (RCODE=0) that includes an Update Lease option.
  Servers <span class="bcp14">MAY</span> return a different lease durations than
- specified by the Requestor, granting relatively longer or shorter
+ specified by the Requester, granting relatively longer or shorter
  leases to reduce network traffic due to Refreshes or to reduce stale
  data, respectively.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
 <p id="section-4.3-2">Although both the 4-byte and 8-byte variant are valid on
@@ -1495,7 +1499,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         the RRs added in a previous update were for some reason garbage
         collected, the Refresh Request will result in those RRs being added again.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <p id="section-5.1-2">The Refresh Request <span class="bcp14">SHOULD NOT</span> include any DNS Update
- prerequisites that would fail if the Requestor's previous Registration
+ prerequisites that would fail if the Requester's previous Registration
  or Refresh is still in effect. It also <span class="bcp14">SHOULD NOT</span>
  include prerequisites that would fail if the RRs affected by the
  previous Registration or Refresh are no longer present; that is, the
@@ -1511,13 +1515,13 @@ svg :is([fill="white"], [fill^="#fff"]) {
  to any KEY RRs included in the Update section.<a href="#section-5.1-4" class="pilcrow">¶</a></p>
 </section>
 <section id="section-5.2">
-        <h3 id="name-requestor-behavior-2">
-<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-requestor-behavior-2" class="section-name selfRef">Requestor Behavior</a>
+        <h3 id="name-requester-behavior-2">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-requester-behavior-2" class="section-name selfRef">Requester Behavior</a>
         </h3>
-<p id="section-5.2-1">A Requestor that intends for its RRs from a previous Registration or Refresh to remain active <span class="bcp14">MUST</span>
+<p id="section-5.2-1">A Requester that intends for its RRs from a previous Registration or Refresh to remain active <span class="bcp14">MUST</span>
  send a Refresh Request before the lease expires; otherwise, the RRs
  will be removed by the server.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-<p id="section-5.2-2">In order to prevent Registrations expiring, Requestors
+<p id="section-5.2-2">In order to prevent Registrations expiring, Requesters
  <span class="bcp14">MUST</span> refresh them. When
  a Lease Update Request succeeds, the client computes a time limit that is 80%
  of the lease duration plus a random offset between 0% and 5% of the lease
@@ -1527,41 +1531,41 @@ svg :is([fill="white"], [fill^="#fff"]) {
  Registration should continue to be advertised.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
 <p id="section-5.2-3">For Refresh Requests, the server is expected to return an Update
  Lease option, if supported, just as with the initial Registration Request. As
- with the Registration Request, the Requestor <span class="bcp14">MUST</span> use the
+ with the Registration Request, the Requester <span class="bcp14">MUST</span> use the
  durations returned by the server in the Lease Update Response when determining when to send the
  next Refresh Request.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
-<p id="section-5.2-4">When sending Refresh Requests, the Requestor <span class="bcp14">MUST</span> include an Update Lease option, as
+<p id="section-5.2-4">When sending Refresh Requests, the Requester <span class="bcp14">MUST</span> include an Update Lease option, as
  it did in the initial Registration Request.
 
  The Update Lease option <span class="bcp14">MAY</span> either specify the same
  durations as in the initial Registration Request or use the values returned by the server
  in the previous Lease Update Response.
- As with responses to Registration Requests, the Requestor <span class="bcp14">MUST</span> use the lease durations
+ As with responses to Registration Requests, the Requester <span class="bcp14">MUST</span> use the lease durations
  returned by the server in the response when determining when to send the next Refresh
  Request.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
 <section id="section-5.2.1">
           <h4 id="name-coalescing-refresh-requests">
 <a href="#section-5.2.1" class="section-number selfRef">5.2.1. </a><a href="#name-coalescing-refresh-requests" class="section-name selfRef">Coalescing Refresh Requests</a>
           </h4>
-<p id="section-5.2.1-1">If the Requestor has performed multiple Registrations with a single server for different RRs,
-          the Requestor <span class="bcp14">MAY</span> send a Refresh Request containing RRs from all such Registrations to that server in a single
-          Refresh Request. This effectively places all RRs for a Requestor on the same expiration
+<p id="section-5.2.1-1">If the Requester has performed multiple Registrations with a single server for different RRs,
+          the Requester <span class="bcp14">MAY</span> send a Refresh Request containing RRs from all such Registrations to that server in a single
+          Refresh Request. This effectively places all RRs for a Requester on the same expiration
           schedule, reducing network traffic due to Refreshes.<a href="#section-5.2.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.2.1-2">In doing so, the Requestor includes in the Refresh Request all existing RRs previously successfylly registered on
+<p id="section-5.2.1-2">In doing so, the Requester includes in the Refresh Request all existing RRs previously successfylly registered on
    the server, including those not yet close to expiration, so long as at least one
    RR updated in the Refresh Request has elapsed at least 75% of its original lease duration. If the
-   Requestor uses UDP, the Requestor <span class="bcp14">MUST NOT</span> coalesce Refresh Requests if doing so would
-   cause truncation of the Request; in this case, the Requestor either sends multiple
+   Requester uses UDP, the Requester <span class="bcp14">MUST NOT</span> coalesce Refresh Requests if doing so would
+   cause truncation of the Request; in this case, the Requester either sends multiple
    Requests or uses TCP to send the complete Refresh Request at once.<a href="#section-5.2.1-2" class="pilcrow">¶</a></p>
-<p id="section-5.2.1-3">Requestors <span class="bcp14">SHOULD NOT</span> send a Refresh Request when all of the RRs in the
+<p id="section-5.2.1-3">Requesters <span class="bcp14">SHOULD NOT</span> send a Refresh Request when all of the RRs in the
    Refresh Request would have more than 50% of their lease duration remaining before expiry. However,
-   there may be cases where the Requestor needs to send an early Refresh Request, and it <span class="bcp14">MAY</span> do
+   there may be cases where the Requester needs to send an early Refresh Request, and it <span class="bcp14">MAY</span> do
    so. For example, a power-constrained (sleepy) device may need to send a Refresh Request when the radio
    is powered so as to avoid having to power it up later.<a href="#section-5.2.1-3" class="pilcrow">¶</a></p>
 <p id="section-5.2.1-4">Another case where this may be needed is when the lease duration registered with the
-   server is no longer appropriate and the Requestor wishes to negotiate a different
+   server is no longer appropriate and the Requester wishes to negotiate a different
    lease duration. However, in this case, if the server does not honor the requested
-   lease duration in its response, the Requestor <span class="bcp14">MUST NOT</span> retry this negotiation.<a href="#section-5.2.1-4" class="pilcrow">¶</a></p>
+   lease duration in its response, the Requester <span class="bcp14">MUST NOT</span> retry this negotiation.<a href="#section-5.2.1-4" class="pilcrow">¶</a></p>
 </section>
 </section>
 <section id="section-5.3">
@@ -1596,7 +1600,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
       </h2>
 <p id="section-7-1">If the lease duration of an RR elapses without being refreshed, the server
       <span class="bcp14">MUST NOT</span> return that RR in answers to queries. The server <span class="bcp14">MAY</span> delete that RR
-      from its database. The lease durations returned by the server to the Requestor are used
+      from its database. The lease durations returned by the server to the Requester are used
       in determining when the lease on an RR has expired.<a href="#section-7-1" class="pilcrow">¶</a></p>
 <p id="section-7-2">For all RRs other than a KEY RR included in a Lease Update Request, the
       lease duration is the LEASE value in the Update Lease option. For KEY RRs, if the
@@ -1618,7 +1622,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
       this upper limit. Default values for these limits of 24 hours and 7 days, respectively,
       are <span class="bcp14">RECOMMENDED</span>.<a href="#section-8-2" class="pilcrow">¶</a></p>
 <p id="section-8-3">The second issue is that a too-short lease can result in increased server load as
-      Requestors rapidly renew such Registrations. A delay in renewing could result in the registered RRs being
+      Requesters rapidly renew such Registrations. A delay in renewing could result in the registered RRs being
       removed prematurely.  Servers implementing Update Lease <span class="bcp14">MUST</span> have a default minimum lease
       duration that avoids this issue.
 

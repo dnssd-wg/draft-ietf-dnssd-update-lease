@@ -13,7 +13,7 @@ ISSN: 2070-1721                                             October 2024
 Abstract
 
    This document describes an EDNS(0) option that can be used by DNS
-   Update Requestors and authoritative DNS servers to include a lifetime
+   Update Requesters and authoritative DNS servers to include a lifetime
    (lease duration) in a DNS Update or DNS Update Response, allowing a
    server to garbage collect stale Resource Records that have been added
    by DNS Updates.
@@ -55,11 +55,11 @@ Table of Contents
    3.  Mechanisms
    4.  Lease Update Request and Response Format
      4.1.  Types of Lease Update Requests
-     4.2.  Requestor Behavior
+     4.2.  Requester Behavior
      4.3.  Server Behavior
    5.  Refresh Requests
      5.1.  Refresh Request Format
-     5.2.  Requestor Behavior
+     5.2.  Requester Behavior
        5.2.1.  Coalescing Refresh Requests
      5.3.  Server Behavior
    6.  Retransmission Strategy
@@ -162,11 +162,11 @@ Table of Contents
 
    Lease Update Requests contain, in the LEASE field of the OPT RDATA,
    an unsigned 32-bit integer indicating the lease duration in seconds,
-   desired by the Requestor, represented in network (big-endian) byte
+   desired by the Requester, represented in network (big-endian) byte
    order.  In Lease Update Responses, this field contains the actual
    lease duration granted by the server.  The lease durations granted by
    the server may be less than, greater than, or equal to the value
-   requested by the Requestor.
+   requested by the Requester.
 
    There are two variants of the Update Lease option: the 4-byte variant
    and the 8-byte variant.
@@ -208,29 +208,29 @@ Table of Contents
    also refresh whatever information is unchanged from a previous
    registration.
 
-4.2.  Requestor Behavior
+4.2.  Requester Behavior
 
-   DNS Update Requestors MUST send an Update Lease option with any DNS
+   DNS Update Requesters MUST send an Update Lease option with any DNS
    Update that updates RRs that are not intended to be present
    indefinitely.  The Update Lease option SHOULD specify a lease
    duration that is no shorter than 1800 seconds (30 minutes).
-   Requestors MAY specify a shorter lease duration if they anticipate
+   Requesters MAY specify a shorter lease duration if they anticipate
    that the RRs being updated will change more frequently than every 30
-   minutes.  Requestors that expect the updated RRs to be relatively
+   minutes.  Requesters that expect the updated RRs to be relatively
    static SHOULD request appropriately longer lease durations.
 
-   If the DNS Response received by the Requestor does not include an
+   If the DNS Response received by the Requester does not include an
    Update Lease option, this is an indication that the DNS server does
-   not support the Update Lease option.  In this case, the Requestor
+   not support the Update Lease option.  In this case, the Requester
    SHOULD continue sending Refresh Requests (see below) as if the server
    had returned an identical Update Lease option in its Response.
 
    If the DNS Response does include an Update Lease option, the
-   Requestor MUST use the durations returned in this option when
+   Requester MUST use the durations returned in this option when
    determining when to send Refresh Requests.  This is true both if the
    durations returned by the server are shorter and if they are longer.
 
-   When sending a Registration Request, the Requestor MUST delay the
+   When sending a Registration Request, the Requester MUST delay the
    initial transmission by a random amount of time across the range of
    0-3000 milliseconds, with a granularity of no more than 10
    milliseconds.  This prevents synchronization of multiple devices of
@@ -266,7 +266,7 @@ Table of Contents
    DNS servers implementing the Update Lease option MUST include an
    Update Lease option in response to any successful DNS Update
    (RCODE=0) that includes an Update Lease option.  Servers MAY return a
-   different lease durations than specified by the Requestor, granting
+   different lease durations than specified by the Requester, granting
    relatively longer or shorter leases to reduce network traffic due to
    Refreshes or to reduce stale data, respectively.
 
@@ -300,7 +300,7 @@ Table of Contents
    result in those RRs being added again.
 
    The Refresh Request SHOULD NOT include any DNS Update prerequisites
-   that would fail if the Requestor's previous Registration or Refresh
+   that would fail if the Requester's previous Registration or Refresh
    is still in effect.  It also SHOULD NOT include prerequisites that
    would fail if the RRs affected by the previous Registration or
    Refresh are no longer present; that is, the Refresh Request should
@@ -320,13 +320,13 @@ Table of Contents
    the duration specified in KEY-LEASE applies to any KEY RRs included
    in the Update section.
 
-5.2.  Requestor Behavior
+5.2.  Requester Behavior
 
-   A Requestor that intends for its RRs from a previous Registration or
+   A Requester that intends for its RRs from a previous Registration or
    Refresh to remain active MUST send a Refresh Request before the lease
    expires; otherwise, the RRs will be removed by the server.
 
-   In order to prevent Registrations expiring, Requestors MUST refresh
+   In order to prevent Registrations expiring, Requesters MUST refresh
    them.  When a Lease Update Request succeeds, the client computes a
    time limit that is 80% of the lease duration plus a random offset
    between 0% and 5% of the lease duration.  The random offset is to
@@ -336,50 +336,50 @@ Table of Contents
 
    For Refresh Requests, the server is expected to return an Update
    Lease option, if supported, just as with the initial Registration
-   Request.  As with the Registration Request, the Requestor MUST use
+   Request.  As with the Registration Request, the Requester MUST use
    the durations returned by the server in the Lease Update Response
    when determining when to send the next Refresh Request.
 
-   When sending Refresh Requests, the Requestor MUST include an Update
+   When sending Refresh Requests, the Requester MUST include an Update
    Lease option, as it did in the initial Registration Request.  The
    Update Lease option MAY either specify the same durations as in the
    initial Registration Request or use the values returned by the server
    in the previous Lease Update Response.  As with responses to
-   Registration Requests, the Requestor MUST use the lease durations
+   Registration Requests, the Requester MUST use the lease durations
    returned by the server in the response when determining when to send
    the next Refresh Request.
 
 5.2.1.  Coalescing Refresh Requests
 
-   If the Requestor has performed multiple Registrations with a single
-   server for different RRs, the Requestor MAY send a Refresh Request
+   If the Requester has performed multiple Registrations with a single
+   server for different RRs, the Requester MAY send a Refresh Request
    containing RRs from all such Registrations to that server in a single
-   Refresh Request.  This effectively places all RRs for a Requestor on
+   Refresh Request.  This effectively places all RRs for a Requester on
    the same expiration schedule, reducing network traffic due to
    Refreshes.
 
-   In doing so, the Requestor includes in the Refresh Request all
+   In doing so, the Requester includes in the Refresh Request all
    existing RRs previously successfylly registered on the server,
    including those not yet close to expiration, so long as at least one
    RR updated in the Refresh Request has elapsed at least 75% of its
-   original lease duration.  If the Requestor uses UDP, the Requestor
+   original lease duration.  If the Requester uses UDP, the Requester
    MUST NOT coalesce Refresh Requests if doing so would cause truncation
-   of the Request; in this case, the Requestor either sends multiple
+   of the Request; in this case, the Requester either sends multiple
    Requests or uses TCP to send the complete Refresh Request at once.
 
-   Requestors SHOULD NOT send a Refresh Request when all of the RRs in
+   Requesters SHOULD NOT send a Refresh Request when all of the RRs in
    the Refresh Request would have more than 50% of their lease duration
    remaining before expiry.  However, there may be cases where the
-   Requestor needs to send an early Refresh Request, and it MAY do so.
+   Requester needs to send an early Refresh Request, and it MAY do so.
    For example, a power-constrained (sleepy) device may need to send a
    Refresh Request when the radio is powered so as to avoid having to
    power it up later.
 
    Another case where this may be needed is when the lease duration
-   registered with the server is no longer appropriate and the Requestor
+   registered with the server is no longer appropriate and the Requester
    wishes to negotiate a different lease duration.  However, in this
    case, if the server does not honor the requested lease duration in
-   its response, the Requestor MUST NOT retry this negotiation.
+   its response, the Requester MUST NOT retry this negotiation.
 
 5.3.  Server Behavior
 
@@ -410,7 +410,7 @@ Table of Contents
    If the lease duration of an RR elapses without being refreshed, the
    server MUST NOT return that RR in answers to queries.  The server MAY
    delete that RR from its database.  The lease durations returned by
-   the server to the Requestor are used in determining when the lease on
+   the server to the Requester are used in determining when the lease on
    an RR has expired.
 
    For all RRs other than a KEY RR included in a Lease Update Request,
@@ -437,7 +437,7 @@ Table of Contents
    are RECOMMENDED.
 
    The second issue is that a too-short lease can result in increased
-   server load as Requestors rapidly renew such Registrations.  A delay
+   server load as Requesters rapidly renew such Registrations.  A delay
    in renewing could result in the registered RRs being removed
    prematurely.  Servers implementing Update Lease MUST have a default
    minimum lease duration that avoids this issue.  A minimum of 30
