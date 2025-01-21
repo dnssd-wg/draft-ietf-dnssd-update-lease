@@ -164,8 +164,8 @@ Perhaps ("Leases" becomes "Lease"):
 
       <t>
       Lease Update Requests and Responses are formatted as standard DNS
-      Update messages <xref target="RFC2136"/>. Such messages <bcp14>MUST</bcp14> include the EDNS(0) OPT RR, as
-      described in <xref target="RFC6891"/>.  This OPT RR <bcp14>MUST</bcp14> include an EDNS(0) Option as shown
+      Update messages <xref target="RFC2136"/>. Such messages <bcp14>MUST</bcp14> include the EDNS(0) OPT RR
+      <xref target="RFC6891"/>.  This OPT RR <bcp14>MUST</bcp14> include an EDNS(0) Option as shown
       below.</t>
 
       <t>The Update Lease EDNS(0) option is formatted as follows:</t>
@@ -492,10 +492,15 @@ Perhaps:
       <name>Retransmission Strategy</name>
       <t>The DNS protocol, including DNS updates, can operate over UDP or TCP. When using UDP, reliable
       transmission must be guaranteed by retransmitting if a DNS UDP message is not acknowledged in a
-      reasonable amount of time. <xref target="RFC1035" section="4.2.1" sectionFormat="of"/> provides some
-      guidance on this topic, as does <xref target="RFC1536" section="1" sectionFormat="of"/>.
-      <xref target="RFC8085" section="3.1.3" sectionFormat="of"/> also provides useful guidance that
-      is particularly relevant to DNS.</t>
+      reasonable amount of time.
+      Section <xref target="RFC1035" section="4.2.1" sectionFormat="bare"/>
+      of the DNS specification <xref target="RFC1035"/>
+      provides some guidance on this topic, as does
+      Section <xref target="RFC1536" section="1" sectionFormat="bare"/>
+      of the IETF's guide to common DNS implementation errors <xref target="RFC1536"/>.
+      Section <xref target="RFC8085" section="3.1.3" sectionFormat="bare"/>
+      of the UDP Usage Guidelines <xref target="RFC8085"/>
+      also provides useful guidance that is particularly relevant to DNS.</t>
     </section>
 
     <section>
@@ -516,7 +521,9 @@ Perhaps:
 
     <section>
       <name>Security Considerations</name>
-      <t><xref target="RFC2136" section="8" sectionFormat="of"/> describes problems that can occur
+
+      <t>Section <xref target="RFC2136" section="8" sectionFormat="bare"/> of
+      the DNS Update specification <xref target="RFC2136"/> describes problems that can occur
       around DNS updates.  Servers implementing this specification should follow these recommendations.</t>
 
       <t>Several additional issues can arise when relying on the Update Lease option.</t>
@@ -571,9 +578,9 @@ documents or something. :)
       (e.g., SIG(0) <xref target="RFC2931"/>) should be required. Keys should
       have limited authority: compromise of a key should not result in
       compromise of the entire contents of one or more zones managed by the
-      server. Key management strategy is out of scope for this document.  An
-      example of a key management strategy can be found in <xref
-      target="RFC9665"/>, which uses "First Come, First Served Naming" rather
+      server. Key management strategy is out of scope for this document.
+      Service Registration Protocol <xref target="RFC9665"/>
+      uses DNS Update Leases with "First Come, First Served Naming" rather
       than an explicit trust establishment process to confer update
       permission to a set of RRs.</t>
     </section>
@@ -581,7 +588,7 @@ documents or something. :)
     <section>
       <name>IANA Considerations</name>
 
-      <t>IANA has updated the "DNS EDNS0 Option Codes (OPT)" registry <xref target="EDNS0Codes"/> as regards value 2 as follows:</t>
+      <t>IANA has updated the "DNS EDNS0 Option Codes (OPT)" registry <xref target="EDNS0Reg"/> as regards value 2 as follows:</t>
 
       <dl newline="false" spacing="compact">
         <dt>Value:</dt> <dd>2</dd>
@@ -633,7 +640,7 @@ documents or something. :)
 	<seriesInfo name="DOI" value="10.17487/RFC9665"/>
       </reference>
 
-      <reference anchor="EDNS0Codes" target="https://www.iana.org/assignments/dns-parameters">
+      <reference anchor="EDNS0Reg" target="https://www.iana.org/assignments/dns-parameters">
         <front>
           <title>DNS EDNS0 Option Codes (OPT)</title>
           <author>
