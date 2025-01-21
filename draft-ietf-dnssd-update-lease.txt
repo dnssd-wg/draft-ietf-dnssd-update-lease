@@ -137,8 +137,8 @@ Table of Contents
 
    Lease Update Requests and Responses are formatted as standard DNS
    Update messages [RFC2136].  Such messages MUST include the EDNS(0)
-   OPT RR, as described in [RFC6891].  This OPT RR MUST include an
-   EDNS(0) Option as shown below.
+   OPT RR [RFC6891].  This OPT RR MUST include an EDNS(0) Option as
+   shown below.
 
    The Update Lease EDNS(0) option is formatted as follows:
 
@@ -412,10 +412,11 @@ Table of Contents
    The DNS protocol, including DNS updates, can operate over UDP or TCP.
    When using UDP, reliable transmission must be guaranteed by
    retransmitting if a DNS UDP message is not acknowledged in a
-   reasonable amount of time.  Section 4.2.1 of [RFC1035] provides some
-   guidance on this topic, as does Section 1 of [RFC1536].
-   Section 3.1.3 of [RFC8085] also provides useful guidance that is
-   particularly relevant to DNS.
+   reasonable amount of time.  Section 4.2.1 of the DNS specification
+   [RFC1035] provides some guidance on this topic, as does Section 1 of
+   the IETF's guide to common DNS implementation errors [RFC1536].
+   Section 3.1.3 of the UDP Usage Guidelines [RFC8085] also provides
+   useful guidance that is particularly relevant to DNS.
 
 7.  Garbage Collection
 
@@ -434,9 +435,9 @@ Table of Contents
 
 8.  Security Considerations
 
-   Section 8 of [RFC2136] describes problems that can occur around DNS
-   updates.  Servers implementing this specification should follow these
-   recommendations.
+   Section 8 of the DNS Update specification [RFC2136] describes
+   problems that can occur around DNS updates.  Servers implementing
+   this specification should follow these recommendations.
 
    Several additional issues can arise when relying on the Update Lease
    option.
@@ -473,15 +474,15 @@ Table of Contents
    [RFC2931]) should be required.  Keys should have limited authority:
    compromise of a key should not result in compromise of the entire
    contents of one or more zones managed by the server.  Key management
-   strategy is out of scope for this document.  An example of a key
-   management strategy can be found in [RFC9665], which uses "First
-   Come, First Served Naming" rather than an explicit trust
-   establishment process to confer update permission to a set of RRs.
+   strategy is out of scope for this document.  Service Registration
+   Protocol [RFC9665] uses DNS Update Leases with "First Come, First
+   Served Naming" rather than an explicit trust establishment process to
+   confer update permission to a set of RRs.
 
 9.  IANA Considerations
 
    IANA has updated the "DNS EDNS0 Option Codes (OPT)" registry
-   [EDNS0Codes] as regards value 2 as follows:
+   [EDNS0Reg] as regards value 2 as follows:
 
    Value:  2
    Name:  Update Lease
@@ -549,8 +550,7 @@ Table of Contents
               DOI 10.17487/RFC9665, October 2024,
               <https://www.rfc-editor.org/info/rfc9665>.
 
-   [EDNS0Codes]
-              IANA, "DNS EDNS0 Option Codes (OPT)",
+   [EDNS0Reg] IANA, "DNS EDNS0 Option Codes (OPT)",
               <https://www.iana.org/assignments/dns-parameters>.
 
    [SYN]      Eddy, W., "Defenses Against TCP SYN Flooding Attacks", The
