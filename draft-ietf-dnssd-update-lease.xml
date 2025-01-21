@@ -48,7 +48,7 @@
     <keyword>DNS Update</keyword>
     <abstract>
       <t>This document describes an EDNS(0) option that can be used by DNS
-      Update Requestors and authoritative DNS servers to include a lifetime (lease duration) in a DNS
+      Update Requesters and authoritative DNS servers to include a lifetime (lease duration) in a DNS
       Update or DNS Update Response, allowing a server to garbage collect stale Resource Records
       that have been added by DNS Updates.</t>
     </abstract>
@@ -206,11 +206,11 @@ Perhaps ("Leases" becomes "Lease"):
 
       <t>Lease Update Requests contain, in the LEASE field of the OPT RDATA, an
       unsigned 32-bit integer indicating the lease duration in seconds, desired
-      by the Requestor, represented in network (big-endian) byte order.
+      by the Requester, represented in network (big-endian) byte order.
       In Lease Update Responses, this field contains the actual
       lease duration granted by the server. The lease durations granted by the
       server may be less than, greater than, or equal to the value
-      requested by the Requestor.</t>
+      requested by the Requester.</t>
 
       <t>There are two variants of the Update Lease option:
       the 4-byte variant and the 8-byte variant.</t>
@@ -251,32 +251,32 @@ Perhaps ("Leases" becomes "Lease"):
 	registration.</t>
       </section>
 
-      <section anchor="requestor">
-	<name>Requestor Behavior</name>
-	<t>DNS Update Requestors <bcp14>MUST</bcp14> send an Update Lease
+      <section anchor="requester">
+	<name>Requester Behavior</name>
+	<t>DNS Update Requesters <bcp14>MUST</bcp14> send an Update Lease
 	option with any DNS Update that updates RRs that are not intended to be present
 	indefinitely. The Update Lease option <bcp14>SHOULD</bcp14> specify a
 	lease duration that is no shorter than 1800 seconds (30
-	minutes). Requestors <bcp14>MAY</bcp14> specify a shorter lease duration if
+	minutes). Requesters <bcp14>MAY</bcp14> specify a shorter lease duration if
 	they anticipate that the RRs being updated will change more frequently than
-	every 30 minutes.  Requestors that expect the updated RRs to be
+	every 30 minutes.  Requesters that expect the updated RRs to be
 	relatively static <bcp14>SHOULD</bcp14> request appropriately longer
 	lease durations.</t>
 
-	<t>If the DNS Response received by the Requestor does not include an
+	<t>If the DNS Response received by the Requester does not include an
 	Update Lease option, this is an indication that the DNS server does
-	not support the Update Lease option. In this case, the Requestor
+	not support the Update Lease option. In this case, the Requester
 	<bcp14>SHOULD</bcp14> continue sending Refresh Requests (see below) as
 	if the server had returned an identical Update Lease option in its
 	Response.</t>
 
 	<t>If the DNS Response does include an Update Lease option, the
-	Requestor <bcp14>MUST</bcp14> use the durations returned in this
+	Requester <bcp14>MUST</bcp14> use the durations returned in this
 	option when determining when to send Refresh Requests. This is true
 	both if the durations returned by the server are shorter and if they
 	are longer.</t>
 
-	<t>When sending a Registration Request, the Requestor <bcp14>MUST</bcp14>
+	<t>When sending a Registration Request, the Requester <bcp14>MUST</bcp14>
 	delay the initial transmission by a random amount of time across the
 	range of 0-3000 milliseconds, with a granularity of no more than 10
 	milliseconds. This prevents synchronization of multiple devices of the
@@ -334,7 +334,7 @@ a /very/ broad scope compared to the set of DNS servers to which we think this d
 	<bcp14>MUST</bcp14> include an Update Lease option in response to any
 	successful DNS Update (RCODE=0) that includes an Update Lease option.
 	Servers <bcp14>MAY</bcp14> return a different lease durations than
-	specified by the Requestor, granting relatively longer or shorter
+	specified by the Requester, granting relatively longer or shorter
 	leases to reduce network traffic due to Refreshes or to reduce stale
 	data, respectively.</t>
 
@@ -372,7 +372,7 @@ a /very/ broad scope compared to the set of DNS servers to which we think this d
         collected, the Refresh Request will result in those RRs being added again.</t>
 
 	<t>The Refresh Request <bcp14>SHOULD NOT</bcp14> include any DNS Update
-	prerequisites that would fail if the Requestor's previous Registration
+	prerequisites that would fail if the Requester's previous Registration
 	or Refresh is still in effect. It also <bcp14>SHOULD NOT</bcp14>
 	include prerequisites that would fail if the RRs affected by the
 	previous Registration or Refresh are no longer present; that is, the
@@ -391,26 +391,26 @@ a /very/ broad scope compared to the set of DNS servers to which we think this d
       </section>
 
       <section>
-	<name>Requestor Behavior</name>
+	<name>Requester Behavior</name>
 
-	<t>A Requestor that intends for its RRs from a previous Registration or Refresh to remain active <bcp14>MUST</bcp14>
+	<t>A Requester that intends for its RRs from a previous Registration or Refresh to remain active <bcp14>MUST</bcp14>
 	send a Refresh Request before the lease expires; otherwise, the RRs
 	will be removed by the server.</t>
 
 <!--[rfced] May we update this text as follows to reduce redundancy?
 
 Original:
-   In order to prevent records expiring, requestors MUST refresh
+   In order to prevent records expiring, requesters MUST refresh
    resource records before they expire.
 
 Perhaps:
-   In order to prevent records expiring, requestors MUST refresh
+   In order to prevent records expiring, requesters MUST refresh
    them.
 
 [Ted] The text morphed as a result of other edits, but I think this is a good suggestion, and I've applied it to the current text.
 -->
 
-	<t>In order to prevent Registrations expiring, Requestors
+	<t>In order to prevent Registrations expiring, Requesters
 	<bcp14>MUST</bcp14> refresh them. When
 	a Lease Update Request succeeds, the client computes a time limit that is 80%
 	of the lease duration plus a random offset between 0% and 5% of the lease
@@ -421,44 +421,44 @@ Perhaps:
 
 	<t>For Refresh Requests, the server is expected to return an Update
 	Lease option, if supported, just as with the initial Registration Request. As
-	with the Registration Request, the Requestor <bcp14>MUST</bcp14> use the
+	with the Registration Request, the Requester <bcp14>MUST</bcp14> use the
 	durations returned by the server in the Lease Update Response when determining when to send the
 	next Refresh Request.</t>
 
-	<t>When sending Refresh Requests, the Requestor <bcp14>MUST</bcp14> include an Update Lease option, as
+	<t>When sending Refresh Requests, the Requester <bcp14>MUST</bcp14> include an Update Lease option, as
 	it did in the initial Registration Request.
 
 	The Update Lease option <bcp14>MAY</bcp14> either specify the same
 	durations as in the initial Registration Request or use the values returned by the server
 	in the previous Lease Update Response.
-	As with responses to Registration Requests, the Requestor <bcp14>MUST</bcp14> use the lease durations
+	As with responses to Registration Requests, the Requester <bcp14>MUST</bcp14> use the lease durations
 	returned by the server in the response when determining when to send the next Refresh
 	Request.</t>
 
 	<section>
 	  <name>Coalescing Refresh Requests</name>
-          <t>If the Requestor has performed multiple Registrations with a single server for different RRs,
-          the Requestor <bcp14>MAY</bcp14> send a Refresh Request containing RRs from all such Registrations to that server in a single
-          Refresh Request. This effectively places all RRs for a Requestor on the same expiration
+          <t>If the Requester has performed multiple Registrations with a single server for different RRs,
+          the Requester <bcp14>MAY</bcp14> send a Refresh Request containing RRs from all such Registrations to that server in a single
+          Refresh Request. This effectively places all RRs for a Requester on the same expiration
           schedule, reducing network traffic due to Refreshes.</t>
 
-	  <t>In doing so, the Requestor includes in the Refresh Request all existing RRs previously successfylly registered on
+	  <t>In doing so, the Requester includes in the Refresh Request all existing RRs previously successfylly registered on
 	  the server, including those not yet close to expiration, so long as at least one
 	  RR updated in the Refresh Request has elapsed at least 75% of its original lease duration. If the
-	  Requestor uses UDP, the Requestor <bcp14>MUST NOT</bcp14> coalesce Refresh Requests if doing so would
-	  cause truncation of the Request; in this case, the Requestor either sends multiple
+	  Requester uses UDP, the Requester <bcp14>MUST NOT</bcp14> coalesce Refresh Requests if doing so would
+	  cause truncation of the Request; in this case, the Requester either sends multiple
 	  Requests or uses TCP to send the complete Refresh Request at once.</t>
 
-	  <t>Requestors <bcp14>SHOULD NOT</bcp14> send a Refresh Request when all of the RRs in the
+	  <t>Requesters <bcp14>SHOULD NOT</bcp14> send a Refresh Request when all of the RRs in the
 	  Refresh Request would have more than 50% of their lease duration remaining before expiry. However,
-	  there may be cases where the Requestor needs to send an early Refresh Request, and it <bcp14>MAY</bcp14> do
+	  there may be cases where the Requester needs to send an early Refresh Request, and it <bcp14>MAY</bcp14> do
 	  so. For example, a power-constrained (sleepy) device may need to send a Refresh Request when the radio
 	  is powered so as to avoid having to power it up later.</t>
 
 	  <t>Another case where this may be needed is when the lease duration registered with the
-	  server is no longer appropriate and the Requestor wishes to negotiate a different
+	  server is no longer appropriate and the Requester wishes to negotiate a different
 	  lease duration. However, in this case, if the server does not honor the requested
-	  lease duration in its response, the Requestor <bcp14>MUST NOT</bcp14> retry this negotiation.</t>
+	  lease duration in its response, the Requester <bcp14>MUST NOT</bcp14> retry this negotiation.</t>
 	</section>
       </section>
 
@@ -492,7 +492,7 @@ Perhaps:
 
       <t>If the lease duration of an RR elapses without being refreshed, the server
       <bcp14>MUST NOT</bcp14> return that RR in answers to queries. The server <bcp14>MAY</bcp14> delete that RR
-      from its database. The lease durations returned by the server to the Requestor are used
+      from its database. The lease durations returned by the server to the Requester are used
       in determining when the lease on an RR has expired.</t>
 
       <t>For all RRs other than a KEY RR included in a Lease Update Request, the
@@ -517,7 +517,7 @@ Perhaps:
       are <bcp14>RECOMMENDED</bcp14>.</t>
 
       <t>The second issue is that a too-short lease can result in increased server load as
-      Requestors rapidly renew such Registrations. A delay in renewing could result in the registered RRs being
+      Requesters rapidly renew such Registrations. A delay in renewing could result in the registered RRs being
       removed prematurely.  Servers implementing Update Lease <bcp14>MUST</bcp14> have a default minimum lease
       duration that avoids this issue.
 
