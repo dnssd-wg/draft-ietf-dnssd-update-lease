@@ -8,7 +8,7 @@
 ]>
 
 
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-08" number="9664" updates="" obsoletes="" ipr="trust200902" version="3" sortRefs="false" consensus="true" symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="std" submissionType="IETF" docName="draft-ietf-dnssd-update-lease-latest" number="9664" updates="" obsoletes="" ipr="trust200902" version="3" sortRefs="false" consensus="true" symRefs="true" tocDepth="3" tocInclude="true" xml:lang="en">
 
   <front>
     <title abbrev='DNS Update Lease'>An EDNS(0) Option to Negotiate Leases on DNS Updates</title>
