@@ -1551,6 +1551,19 @@ svg :is([fill="white"], [fill^="#fff"]) {
  As with responses to Registration Requests, the Requester <span class="bcp14">MUST</span> use the lease durations
  returned by the server in the response when determining when to send the next Refresh
  Request.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.2-5">If the Requester sends a Refresh Request message and
+ does not receive a response from the authoritative DNS server,
+ then the Requester SHOULD implement a reasonable retry strategy
+ to attempt to refresh the record registrations before they expire.
+ Given that 15% - 20% of the lease lifetime still remains,
+ these retransmissions do not need to be overly aggressive.
+ For example, the Requester could retry nine more times,
+ spaced uniformly at equal intervals from the time of the first
+ failed Refresh attempt until the expiration time of the records.
+ After the expiration time of the records, the Refresh Request
+ effectively turns into a new Registration Request, and further
+ retransmissions after this proceed
+ as described in <a href="#retransmission" class="auto internal xref">Section 6</a>.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
 <section id="section-5.2.1">
           <h4 id="name-coalescing-refresh-requests">
 <a href="#section-5.2.1" class="section-number selfRef">5.2.1. </a><a href="#name-coalescing-refresh-requests" class="section-name selfRef">Coalescing Refresh Requests</a>
@@ -1591,6 +1604,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </section>
 </section>
 </div>
+<div id="retransmission">
 <section id="section-6">
       <h2 id="name-retransmission-strategy">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-retransmission-strategy" class="section-name selfRef">Retransmission Strategy</a>
@@ -1607,6 +1621,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
       of the UDP Usage Guidelines <span>[<a href="#RFC8085" class="cite xref">RFC8085</a>]</span>
       also provides useful guidance that is particularly relevant to DNS.<a href="#section-6-1" class="pilcrow">¶</a></p>
 </section>
+</div>
 <section id="section-7">
       <h2 id="name-garbage-collection">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-garbage-collection" class="section-name selfRef">Garbage Collection</a>

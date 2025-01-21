@@ -360,6 +360,18 @@ Table of Contents
    returned by the server in the response when determining when to send
    the next Refresh Request.
 
+   If the Requester sends a Refresh Request message and does not receive
+   a response from the authoritative DNS server, then the Requester
+   SHOULD implement a reasonable retry strategy to attempt to refresh
+   the record registrations before they expire.  Given that 15% - 20% of
+   the lease lifetime still remains, these retransmissions do not need
+   to be overly aggressive.  For example, the Requester could retry nine
+   more times, spaced uniformly at equal intervals from the time of the
+   first failed Refresh attempt until the expiration time of the
+   records.  After the expiration time of the records, the Refresh
+   Request effectively turns into a new Registration Request, and
+   further retransmissions after this proceed as described in Section 6.
+
 5.2.1.  Coalescing Refresh Requests
 
    If the Requester has performed multiple Registrations with a single
