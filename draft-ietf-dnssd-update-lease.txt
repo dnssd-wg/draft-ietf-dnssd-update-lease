@@ -12,11 +12,11 @@ ISSN: 2070-1721                                             October 2024
 
 Abstract
 
-   This document describes an EDNS(0) option that can be used by DNS
-   Update Requesters and authoritative DNS servers to include a lifetime
-   (lease duration) in a DNS Update or DNS Update Response, allowing a
-   server to garbage collect stale Resource Records that have been added
-   by DNS Updates.
+   This document describes an EDNS(0) option that can be used between
+   DNS Update Requesters and authoritative DNS servers to include a
+   lifetime (lease duration) in a DNS Update or DNS Update Response,
+   allowing a server to garbage collect stale Resource Records that have
+   been added by DNS Updates if they are not renewed.
 
 Status of This Memo
 
@@ -74,8 +74,8 @@ Table of Contents
 
 1.  Introduction
 
-   Dynamic Update in the Domain Name System[RFC2136] (DNS Update) allows
-   for a mapping from a persistent hostname to an IP address that
+   Dynamic Update in the Domain Name System (DNS Update) [RFC2136]
+   allows for a mapping from a persistent hostname to an IP address that
    changes over time.  This capability is particularly beneficial to
    mobile hosts, whose IP addresses may frequently change with location.
    However, the mobile nature of such hosts often means that Resource
@@ -83,9 +83,9 @@ Table of Contents
    instance, consider a mobile user who publishes address RRs via DNS
    Update.  If this user moves their laptop out of range of the Wi-Fi
    access point, the address RR containing stale information may remain
-   on the server indefinitely.  Thus, an extension to DNS Update is
-   required to tell the server to automatically delete RRs if they are
-   not refreshed after a period of time.
+   on the authoritative DNS server indefinitely.  Thus, an extension to
+   DNS Update is required to tell the server to automatically delete RRs
+   after a period of time if they are not refreshed.
 
 2.  Conventions and Terminology Used in This Document
 
@@ -103,9 +103,9 @@ Table of Contents
 
    Update Lease option  Update Lease EDNS(0) option
 
-   Lease  An agreement by a DNS server to continue to publish a record
-      from the time of registration until the lease duration has
-      elapsed, and then stop publishing it.
+   Lease  An agreement by an authoritative DNS server to continue to
+      publish a record from the time of registration until the lease
+      duration has elapsed, and then stop publishing it.
 
    Lease Duration  The time between the start and end of a lease.
 
@@ -119,7 +119,7 @@ Table of Contents
 
    Registration Request  A Lease Update Request that is constructed with
       the purpose of adding new information that is not thought to
-      already be present on the DNS server.
+      already be present on the authoritative DNS server.
 
    Registration  The result of a successful Registration Request.
 
@@ -148,7 +148,7 @@ Table of Contents
    +===============+===========+======================================+
    | OPTION-CODE   | u_int16_t | UPDATE-LEASE (2)                     |
    +---------------+-----------+--------------------------------------+
-   | OPTION-LENGTH | u_int16_t | 4 or 8                               |
+   | OPTION-LENGTH | u_int16_t | 4 (LEASE) or 8 (LEASE + KEY-LEASE)   |
    +---------------+-----------+--------------------------------------+
    | LEASE         | u_int32_t | desired lease duration (Lease Update |
    |               |           | Request) or granted lease duration   |
@@ -164,9 +164,9 @@ Table of Contents
    an unsigned 32-bit integer indicating the lease duration in seconds,
    desired by the Requester, represented in network (big-endian) byte
    order.  In Lease Update Responses, this field contains the actual
-   lease duration granted by the server.  The lease durations granted by
-   the server may be less than, greater than, or equal to the value
-   requested by the Requester.
+   lease duration granted by the authoritative DNS server.  The lease
+   durations granted by the server may be less than, greater than, or
+   equal to the value requested by the Requester.
 
    There are two variants of the Update Lease option: the 4-byte variant
    and the 8-byte variant.
@@ -179,6 +179,9 @@ Table of Contents
    all RRs in the Update section _except_ for KEY RRs.  The KEY-LEASE
    indicated in the Update Lease option applies to KEY RRs in the Update
    section.
+
+   More information about how the two variants are used is given in
+   Section 4.3.
 
    KEY RRs are given a special lease duration because these RRs are used
    in the DNS-SD Service Registration Protocol [RFC9665] to reserve a
@@ -196,11 +199,11 @@ Table of Contents
    This document describes two types of Lease Update Requests:
    Registrations and Refreshes.  A Registration Request is a Lease
    Update Request that is intended to add information not already
-   present on the DNS server.  A Refresh Request is intended simply to
-   renew the lease on a previous Registration without changing anything.
-   Registrations and Refreshes are both Lease Update Requests, so the
-   term "Lease Update Request" is to specify behavior that is the same
-   for both types of DNS Update.
+   present on the authoritative DNS server.  A Refresh Request is
+   intended simply to renew the lease on a previous Registration without
+   changing anything.  Registrations and Refreshes are both Lease Update
+   Requests, so the term "Lease Update Request" is to specify behavior
+   that is the same for both types of DNS Update.
 
    In some cases, it may be necessary to add new information without
    removing old information.  For the purpose of this document, such
@@ -220,10 +223,11 @@ Table of Contents
    static SHOULD request appropriately longer lease durations.
 
    If the DNS Response received by the Requester does not include an
-   Update Lease option, this is an indication that the DNS server does
-   not support the Update Lease option.  In this case, the Requester
-   SHOULD continue sending Refresh Requests (see below) as if the server
-   had returned an identical Update Lease option in its Response.
+   Update Lease option, this is an indication that the authoritative DNS
+   server does not support the Update Lease option.  In this case, the
+   Requester SHOULD continue sending Refresh Requests (see below) as if
+   the server had returned an identical Update Lease option in its
+   Response.
 
    If the DNS Response does include an Update Lease option, the
    Requester MUST use the durations returned in this option when
@@ -263,26 +267,32 @@ Table of Contents
 
 4.3.  Server Behavior
 
-   DNS servers implementing the Update Lease option MUST include an
-   Update Lease option in response to any successful DNS Update
-   (RCODE=0) that includes an Update Lease option.  Servers MAY return a
-   different lease durations than specified by the Requester, granting
-   relatively longer or shorter leases to reduce network traffic due to
-   Refreshes or to reduce stale data, respectively.
+   Authoritative DNS servers implementing the Update Lease option MUST
+   include an Update Lease option in response to any successful DNS
+   Update (RCODE=0) that includes an Update Lease option.  Servers MAY
+   return lease durations different from those specified by the
+   Requester, granting longer leases to reduce network traffic due to
+   Refreshes, or shorter leases to reduce the lifetime of stale data.
 
-   Although both the 4-byte and 8-byte variant are valid on both clients
-   and servers, but clients and servers may exist that do not support
-   the newer 8-byte variant.  Therefore, clients and servers that do
-   support this variant must account for the possibility that the server
-   with which they are communicating does not.
+   Although both the 4-byte and 8-byte variant are valid on both
+   requesters and servers, older (pre-standard) requesters and servers
+   may exist that support only the 4-byte variant.  Therefore,
+   requesters and servers that (as required by this specification)
+   support both variants must account for the possibility that the peer
+   with which they are communicating may be an older implementation that
+   supports only the 4-byte variant.
 
-   A client that receives a 4-byte variant from a server when it sent an
-   8-byte variant MUST treat the 4-byte variant as specifying both the
-   lease duration and the KEY lease duration.  A server that supports
-   the 8-byte variant MUST treat the 4-byte variant as specifying both
-   the lease duration and the KEY lease duration.  When a server
-   receives a 4-byte variant, it MUST respond with a 4-byte variant.  In
-   this case, the key and the other RRs expire at the same time.
+   A server that receives an 8-byte variant from a requester MUST
+   respond with an 8-byte variant giving the granted lease times.
+
+   A server that receives a 4-byte variant from a requester MUST treat
+   the 4-byte variant as specifying both the lease duration and the KEY
+   lease duration and MUST respond with a 4-byte variant.  In this case,
+   the key and the other RRs expire at the same time.
+
+   A requester that receives a 4-byte variant from a server when it sent
+   an 8-byte variant in its request MUST treat the 4-byte variant as
+   specifying both the lease duration and the KEY lease duration.
 
 5.  Refresh Requests
 
@@ -296,21 +306,22 @@ Table of Contents
    Lease Responses (see Section 4).  The Refresh Request is constructed
    with the assumption that the previous Registration or Refresh is
    still in effect.  In the case that the RRs added in a previous update
-   were for some reason garbage collected, the Refresh Request will
+   were for some reason garbage collected (e.g., because of a server
+   reboot that resulted in loss of state), the Refresh Request will
    result in those RRs being added again.
 
    The Refresh Request SHOULD NOT include any DNS Update prerequisites
-   that would fail if the Requester's previous Registration or Refresh
-   is still in effect.  It also SHOULD NOT include prerequisites that
-   would fail if the RRs affected by the previous Registration or
-   Refresh are no longer present; that is, the Refresh Request should
-   also work as a Registration Request.  There may be cases where this
-   is not possible; in which case, the response from the server can be
-   used to determine how to proceed when the Refresh Request fails.
+   that will fail if the Requester's previous Registration or Refresh is
+   still in effect.  It also SHOULD NOT include prerequisites that would
+   fail if the RRs affected by the previous Registration or Refresh are
+   no longer present; that is, the Refresh Request should also work as a
+   Registration Request.  There may be cases where this is not possible;
+   in which case, the response from the server can be used to determine
+   how to proceed when the Refresh Request fails.
 
-   A Lease Update Request that changes the server state resulting from a
-   previous Refresh or Registration is a Registration Request, not a
-   Refresh Request.
+   A Lease Update Request that changes the authoritative DNS server
+   state resulting from a previous Refresh or Registration is a
+   Registration Request, not a Refresh Request.
 
    The Update Lease option in a Refresh Request contains the desired new
    lease duration for Requests, and the actual granted lease for
@@ -327,11 +338,11 @@ Table of Contents
    expires; otherwise, the RRs will be removed by the server.
 
    In order to prevent Registrations expiring, Requesters MUST refresh
-   them.  When a Lease Update Request succeeds, the client computes a
+   them.  When a Lease Update Request succeeds, the requester computes a
    time limit that is 80% of the lease duration plus a random offset
    between 0% and 5% of the lease duration.  The random offset is to
    prevent refreshes from being synchronized.  When this time limit has
-   expired, the client MUST send a Refresh Request if the data in the
+   expired, the requester MUST send a Refresh Request if the data in the
    initial Registration should continue to be advertised.
 
    For Refresh Requests, the server is expected to return an Update
@@ -387,9 +398,10 @@ Table of Contents
    acknowledgment.  This acknowledgment is a Lease Update Response as
    described in Section 4 and contains the new lease duration of the
    Registration being Refreshed.  The server MUST NOT increment the
-   serial number of a zone as the result of a Refresh Request.
+   serial number of a zone as the result of a Refresh Request if the
+   operation does not result in any change to the zone contents.
 
-   However, the server's state may not match what the client expects.
+   However, the server's state may not match what the requester expects.
    In this case, a Refresh Request may actually appear to be a
    Registration Request, from the server's perspective.  If the Refresh
    Request changes the contents of the zone, the server MUST update the
@@ -408,10 +420,10 @@ Table of Contents
 7.  Garbage Collection
 
    If the lease duration of an RR elapses without being refreshed, the
-   server MUST NOT return that RR in answers to queries.  The server MAY
-   delete that RR from its database.  The lease durations returned by
-   the server to the Requester are used in determining when the lease on
-   an RR has expired.
+   authoritative DNS server MUST NOT return that RR in answers to
+   queries.  The server MAY delete that RR from its database.  The lease
+   durations returned by the server to the Requester are used in
+   determining when the lease on an RR has expired.
 
    For all RRs other than a KEY RR included in a Lease Update Request,
    the lease duration is the LEASE value in the Update Lease option.
@@ -427,14 +439,16 @@ Table of Contents
    recommendations.
 
    Several additional issues can arise when relying on the Update Lease
-   option.  First, a too-long lease duration is not much different than
-   no lease duration: the RRs associated with such a Registration will
+   option.
+
+   First, a too-long lease duration is not much different from no lease
+   duration: the RRs associated with such a Registration will
    effectively never be cleaned up.  Servers implementing Update Lease
    should have a default upper bound on the maximum acceptable value
-   both for the LEASE and KEY-LEASE values sent by the client.  Servers
-   MAY provide a way for the operator to change this upper limit.
+   both for the LEASE and KEY-LEASE values sent by the requester.
    Default values for these limits of 24 hours and 7 days, respectively,
-   are RECOMMENDED.
+   are RECOMMENDED.  Servers MAY provide a way for the operator to
+   change this upper limit.
 
    The second issue is that a too-short lease can result in increased
    server load as Requesters rapidly renew such Registrations.  A delay
@@ -443,16 +457,16 @@ Table of Contents
    minimum lease duration that avoids this issue.  A minimum of 30
    seconds for both the LEASE and KEY-LEASE durations is RECOMMENDED.
    However, in most cases, much longer lease durations (for example, an
-   hour) SHOULD be used.
+   hour) SHOULD be used.  Servers MAY provide a way for the operator to
+   change this lower limit.
 
    There may be some cost associated with renewing leases.  A malicious
-   (or buggy) client could renew at a high rate in order to overload the
-   server more than it would be overloaded by query traffic.  This risk
-   is present for a regular DNS Update as well.  The server MUST enforce
-   a minimum interval between updates.  After a Refresh or Registration
-   Request has been successfully processed and acknowledged, another
-   Lease Update Request of either type from the client during that
-   interval MUST be silently ignored by the server.
+   (or buggy) requester could renew at a high rate in order to overload
+   the server more than it would be overloaded by query traffic.  This
+   risk is present for an authoritative server handling normal (no-
+   lease) DNS Updates as well.  Servers SHOULD follow established
+   industry best practices to guard against flooding attacks [SYN]
+   [RFC4953].
 
    Some authentication strategy should be used when accepting DNS
    updates.  Shared secret [RFC8945] or public key signing (e.g., SIG(0)
@@ -512,6 +526,10 @@ Table of Contents
               ( SIG(0)s )", RFC 2931, DOI 10.17487/RFC2931, September
               2000, <https://www.rfc-editor.org/info/rfc2931>.
 
+   [RFC4953]  Touch, J., "Defending TCP Against Spoofing Attacks",
+              RFC 4953, DOI 10.17487/RFC4953, July 2007,
+              <https://www.rfc-editor.org/info/rfc4953>.
+
    [RFC6763]  Cheshire, S. and M. Krochmal, "DNS-Based Service
               Discovery", RFC 6763, DOI 10.17487/RFC6763, February 2013,
               <https://www.rfc-editor.org/info/rfc6763>.
@@ -534,6 +552,12 @@ Table of Contents
    [EDNS0Codes]
               IANA, "DNS EDNS0 Option Codes (OPT)",
               <https://www.iana.org/assignments/dns-parameters>.
+
+   [SYN]      Eddy, W., "Defenses Against TCP SYN Flooding Attacks", The
+              Internet Protocol Journal, Cisco Systems, Volume 9, Number
+              4, December 2006,
+              <https://www.cisco.com/web/about/ac123/ac147/
+              archived_issues/ipj_9-4/ipj_9-4.pdf>.
 
 Acknowledgments
 
