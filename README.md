@@ -1,6 +1,6 @@
-# An EDNS(0) option to negotiate Leases on DNS Updates
+# An EDNS(0) Option to Negotiate Leases on DNS Updates
 
-This is the working area for the IETF [DNSSD Working Group](https://datatracker.ietf.org/wg/dnssd/documents/) Internet-Draft, "An EDNS(0) option to negotiate Leases on DNS Updates".
+This is the working area for the IETF [DNSSD Working Group](https://datatracker.ietf.org/group/dnssd/documents/) Internet-Draft, "An EDNS(0) Option to Negotiate Leases on DNS Updates".
 
 * [Editor's Copy](https://dnssd-wg.github.io/draft-ietf-dnssd-update-lease/#go.draft-ietf-dnssd-update-lease.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-dnssd-update-lease)
