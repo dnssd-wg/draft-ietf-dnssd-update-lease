@@ -362,7 +362,7 @@ Table of Contents
 
    If the Requester sends a Refresh Request message and does not receive
    a response from the authoritative DNS server, then the Requester
-   SHOULD implement a reasonable retry strategy to attempt to refresh
+   should implement a reasonable retry strategy to attempt to refresh
    the record registrations before they expire.  Given that 15% - 20% of
    the lease lifetime still remains, these retransmissions do not need
    to be overly aggressive.  For example, the Requester could retry nine
@@ -477,9 +477,10 @@ Table of Contents
    (or buggy) requester could renew at a high rate in order to overload
    the server more than it would be overloaded by query traffic.  This
    risk is present for an authoritative server handling normal (no-
-   lease) DNS Updates as well.  Servers SHOULD follow established
-   industry best practices to guard against flooding attacks [SYN]
-   [RFC4953].
+   lease) DNS Updates as well.  Servers should follow established
+   industry best practices to guard against flooding attacks, both for
+   malicious flooding of DNS messages over UDP, and for similar flooding
+   attacks using TCP [SYN] [RFC4953].
 
    Some authentication strategy should be used when accepting DNS
    updates.  Shared secret [RFC8945] or public key signing (e.g., SIG(0)

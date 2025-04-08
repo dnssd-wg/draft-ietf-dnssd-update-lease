@@ -13,18 +13,18 @@
       Update or DNS Update Response, allowing a server to garbage collect stale Resource Records
       that have been added by DNS Updates if they are not renewed. 
     " name="description">
-<meta content="xml2rfc 3.26.0" name="generator">
+<meta content="xml2rfc 3.28.1" name="generator">
 <meta content="DNS Update" name="keyword">
 <meta content="9664" name="rfc.number">
 <!-- Generator version information:
-  xml2rfc 3.26.0
-    Python 3.12.8
+  xml2rfc 3.28.1
+    Python 3.12.9
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
-    Jinja2 3.1.5
+    Jinja2 3.1.6
     lxml 5.3.0
-    platformdirs 4.3.6
+    platformdirs 4.3.7
     pycountry 24.6.1
     PyYAML 6.0.2
     requests 2.32.3
@@ -439,7 +439,7 @@ dl {
     margin-bottom: 0;
   }
 }
-dl > dt {
+dl:not(.dlNewline) > dt {
   float: left;
   margin-right: 2ch;
   min-width: 8ch;
@@ -1553,7 +1553,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
  Request.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
 <p id="section-5.2-5">If the Requester sends a Refresh Request message and
  does not receive a response from the authoritative DNS server,
- then the Requester SHOULD implement a reasonable retry strategy
+ then the Requester should implement a reasonable retry strategy
  to attempt to refresh the record registrations before they expire.
  Given that 15% - 20% of the lease lifetime still remains,
  these retransmissions do not need to be overly aggressive.
@@ -1668,8 +1668,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
       (or buggy) requester could renew at a high rate in order to overload the
       server more than it would be overloaded by query traffic. This risk is
       present for an authoritative server handling normal (no-lease) DNS Updates as well.
-      Servers SHOULD follow established
-      industry best practices to guard against flooding attacks
+      Servers should follow established
+      industry best practices to guard against flooding attacks,
+      both for malicious flooding of DNS messages over UDP,
+      and for similar flooding attacks using TCP
       <span>[<a href="#SYN" class="cite xref">SYN</a>]</span> <span>[<a href="#RFC4953" class="cite xref">RFC4953</a>]</span>.<a href="#section-8-5" class="pilcrow">¶</a></p>
 <p id="section-8-6">Some authentication strategy should be used when accepting DNS
       updates.  Shared secret <span>[<a href="#RFC8945" class="cite xref">RFC8945</a>]</span> or public key signing
